@@ -6,4 +6,6 @@ The corpus was produced by the WP ContentLedger 0.13.12 synthetic test exporter 
 
 The private exporter and its generator harness are deliberately not included. Each fixture is instead pinned by byte length, SHA-256 digest, expected outcome, and expected result code in `corpus-manifest.json`. `public-conformance.test.ts` executes the public verifier directly against every pinned package.
 
+`tests/fixtures/webvh/` also contains two deterministic, public-only did:webvh interoperability histories used by the browser verifier tests. They contain only public keys, successor commitments, hashes, signatures, and public DID state—no private construction material or production identity data. `public-boundary.test.mjs` pins their exact filenames, byte lengths, and SHA-256 values and refuses any test dependency on a parent or private QA fixture tree.
+
 This corpus supports repeatable conformance testing. It is not an independent implementation, an independent security review, or proof that the private exporter is correct.

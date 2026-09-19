@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
@@ -64,11 +65,34 @@ test('production source is browser-only, local-only, and independent of parent p
   }
 });
 
+test('tests and audits cannot depend on files in a parent or private QA repository', () => {
+  for (const { path, absolute } of inventory().filter(({ path }) => /\.(?:ts|mjs)$/.test(path))) {
+    const text = readFileSync(absolute, 'utf8');
+    assert.doesNotMatch(text, /new URL\(\s*['"`](?:\.\.\/){3,}/, path);
+    assert.doesNotMatch(text, /(?:^|[/'"`])qa\/fixtures\//m, path);
+  }
+});
+
 test('checked-in evidence packages contain no obvious key material or workstation paths', () => {
   for (const { path, absolute } of inventory().filter(({ path }) => /^tests\/fixtures\/.*\.zip$/.test(path))) {
     const bytes = readFileSync(absolute);
     const text = bytes.toString('latin1');
     assert.doesNotMatch(text, /-----BEGIN (?:OPENSSH |EC |RSA )?PRIVATE KEY-----/i, path);
     assert.doesNotMatch(text, /(?:[A-Z]:\\Users\\|\/Users\/|\/home\/)[^/\\\s]+/i, path);
+  }
+});
+
+test('public WebVH interoperability fixtures are exact, synthetic, and self-contained', () => {
+  const expected = {
+    'tests/fixtures/webvh/valid-path-assertion-rotation-ratchet.jsonl': { bytes: 3954, sha256: 'b2f7b8c1df6bbcd2cefb61a1d493c0634c365ff6031c579367f0280548e5d207' },
+    'tests/fixtures/webvh/valid-root-continuous-ratchet.jsonl': { bytes: 3787, sha256: '6631a2b6c4f2e898c384f82a90b104763dc6d4e18d72a27d4ba16bb212e4b6eb' },
+  };
+  const fixtures = inventory().filter(({ path }) => path.startsWith('tests/fixtures/webvh/'));
+  assert.deepEqual(fixtures.map(({ path }) => path).sort(), Object.keys(expected).sort());
+  for (const { path, absolute, size } of fixtures) {
+    const bytes = readFileSync(absolute);
+    assert.equal(size, expected[path].bytes, path);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), expected[path].sha256, path);
+    assert.doesNotMatch(bytes.toString('utf8'), /-----BEGIN (?:OPENSSH |EC |RSA )?PRIVATE KEY-----|(?:[A-Z]:\\Users\\|\/Users\/|\/home\/)[^/\\\s]+/i, path);
   }
 });

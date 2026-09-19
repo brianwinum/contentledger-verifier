@@ -13,7 +13,8 @@ interface Entry {
   versionId: string;
   versionTime: string;
 }
-const fixture = readFileSync(new URL('../../../qa/fixtures/did-webvh-production-profile-v1/valid-root-continuous-ratchet.jsonl', import.meta.url));
+const webvhFixture = (filename: string): Buffer => readFileSync(new URL(`../../tests/fixtures/webvh/${filename}`, import.meta.url));
+const fixture = webvhFixture('valid-root-continuous-ratchet.jsonl');
 const log = fixture.toString('utf8').trimEnd().split('\n').map(line => JSON.parse(line) as Entry);
 const did = log[0].state.id;
 const asOf = '2026-08-23T00:00:00Z';
@@ -32,7 +33,7 @@ async function rejects(raw: Uint8Array, code: string, status: 'invalid' | 'unsup
 
 test('WebVH resolves complete continuous and assertion-rotation histories with exact public fields', async () => {
   for (const filename of ['valid-root-continuous-ratchet.jsonl', 'valid-path-assertion-rotation-ratchet.jsonl']) {
-    const raw = readFileSync(new URL(`../../../qa/fixtures/did-webvh-production-profile-v1/${filename}`, import.meta.url));
+    const raw = webvhFixture(filename);
     const expected = JSON.parse(raw.toString('utf8').split('\n')[0]).state.id as string;
     const result = await verifyWebvh(expected, raw, asOf);
     assert.equal(result.status, 'valid'); assert.equal(result.code, 'ok'); assert.equal(result.entryCount, 3);
