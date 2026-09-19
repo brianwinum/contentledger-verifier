@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import { defineConfig } from '@playwright/test';
 
+const windowsBrandedProjects = process.platform === 'win32' && process.env.CONTENTLEDGER_WINDOWS_CHANNELS === '1' ? [
+  { name: 'windows-chrome', use: { browserName: 'chromium' as const, channel: 'chrome' } },
+  { name: 'windows-edge', use: { browserName: 'chromium' as const, channel: 'msedge' } },
+] : [];
+
 export default defineConfig({
   testDir: './e2e',
   outputDir: 'test-results',
@@ -29,5 +34,6 @@ export default defineConfig({
     { name: 'chromium', use: { browserName: 'chromium' } },
     { name: 'firefox', use: { browserName: 'firefox' } },
     { name: 'webkit', use: { browserName: 'webkit' } },
+    ...windowsBrandedProjects,
   ],
 });

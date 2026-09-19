@@ -16,6 +16,8 @@ network silence.
   `fc8dbb6d7ef6d8f24391dbdbb7b93e6d2451b7257e0e1bf745009d37d96ce595`
 - Source revision was not embedded in the development build. The public verifier
   directory was an untracked local worktree during this run.
+- Playwright 1.63.0 and `@axe-core/playwright` 4.13.0 were used for the
+  automated accessibility qualification added later that day.
 
 ## Fixtures
 
@@ -52,6 +54,27 @@ OneDrive-backed directory, so the operator manually selected the byte-identical
 non-reparse-point copy for the final server-stopped test. This is an automation
 limitation, not an observed checker failure.
 
+## Automated accessibility and reflow qualification
+
+The accessibility suite was run on Windows against Playwright Chromium
+153.0.8010.12, Firefox 155.0, WebKit 26.6, installed Chrome 152.0.7977.83, and
+installed Edge 153.0.4234.32. Eighteen checks passed and two engine-inapplicable
+forced-colors checks were skipped.
+
+| Coverage | Observed result | Status |
+| --- | --- | --- |
+| WCAG A/AA Axe scan | No violations reported in the initial, expanded-comparison, invalid-input, or completed-result states in all five engines | Passed with automated-scan limitation |
+| Keyboard path | Header/chooser/disclosure/field order, native disclosure operation, implicit Enter submission, and absence of a tested focus trap passed; default WebKit appropriately begins at the first form control unless full keyboard access is enabled | Passed |
+| Validation focus | Invalid comparison value exposed `role=alert`, `aria-invalid`, and `aria-errormessage`, then returned focus to the field | Passed |
+| Completion focus and announcement | Completed failure focused the result summary and populated the polite status announcement | Passed |
+| 200%/400%-equivalent reflow | Completed interface at 640- and 320-CSS-pixel viewport widths had no document-level horizontal overflow and retained usable chooser/report controls | Passed |
+| Windows forced colors | Chromium, installed Chrome, and installed Edge retained visible focus outlines and control boundaries under forced-colors/high-contrast emulation | Passed with emulation limitation |
+| Reduced motion | Chromium-family engines removed the progress animation when reduced motion was requested | Passed |
+
+Automated Axe scans cannot prove WCAG conformance, and viewport/media emulation is
+not the same as operating Windows Narrator, browser zoom controls, or Windows
+Contrast Themes by hand. Those manual assistive-technology checks remain open.
+
 ## Report custody
 
 | Browser | Saved filename | Size | Saved-file SHA-256 |
@@ -64,12 +87,10 @@ expected because their check timestamps differ.
 
 ## Still open
 
-- macOS Safari/Chrome testing
-- Firefox testing
-- Narrator and VoiceOver testing
-- 200%/400% zoom, narrow reflow and OS text-enlargement qualification
-- Drag/drop, chooser cancellation, malformed input, cancellation while busy and
-  repeated-worker lifecycle cases in each browser
+- macOS Safari/Chrome and VoiceOver testing
+- Windows Narrator testing
+- Manual browser 200%/400% zoom, Windows Contrast Themes, and OS text-enlargement testing
+- Manual branded Firefox testing; automated Firefox checks pass
 - Full browser request capture and host-level network observation
 - Fully disconnected operation and offline-distribution cold start
 - Independent security and cryptographic review
