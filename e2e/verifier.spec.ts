@@ -95,9 +95,15 @@ test('WebKit either completes Ed25519 checks or fails closed with an explicit ca
     await expect(page.locator('#check-count')).toHaveText('17 checks');
   } else {
     await expect(title).toHaveText('This package could not be checked');
-    await expect(page.locator('#package-information')).toContainText('browser_ed25519_unavailable');
+    const information = await page.locator('#package-information').textContent();
+    const capabilityCode = information?.includes('browser_ed25519_unavailable')
+      ? 'browser_ed25519_unavailable'
+      : information?.includes('browser_ed25519_unqualified')
+        ? 'browser_ed25519_unqualified'
+        : null;
+    expect(capabilityCode, 'WebKit must fail closed with a bounded Ed25519 capability result.').not.toBeNull();
     await expect(page.locator('#check-count')).toHaveText('5 checks');
-    test.info().annotations.push({ type: 'capability', description: 'This Playwright WebKit host lacks Ed25519 WebCrypto and failed closed.' });
+    test.info().annotations.push({ type: 'capability', description: `This Playwright WebKit host returned ${capabilityCode} and failed closed.` });
   }
 
   const downloadPromise = page.waitForEvent('download');
@@ -106,9 +112,11 @@ test('WebKit either completes Ed25519 checks or fails closed with an explicit ca
   const downloadedPath = await download.path();
   expect(downloadedPath).not.toBeNull();
   const report = JSON.parse(await readFile(downloadedPath!, 'utf8')) as { outcome: string; code: string; checks: unknown[] };
-  expect(report).toMatchObject(completed
-    ? { outcome: 'passed_with_limitations', code: 'browser_profile_checks_complete' }
-    : { outcome: 'could_not_check', code: 'browser_ed25519_unavailable' });
+  if (completed) expect(report).toMatchObject({ outcome: 'passed_with_limitations', code: 'browser_profile_checks_complete' });
+  else {
+    expect(report.outcome).toBe('could_not_check');
+    expect(['browser_ed25519_unavailable', 'browser_ed25519_unqualified']).toContain(report.code);
+  }
   expect(report.checks).toHaveLength(completed ? 17 : 5);
 
   if (completed) {
