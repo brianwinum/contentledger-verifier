@@ -69,9 +69,13 @@ test('initial, comparison, validation, and result states have no WCAG A/AA Axe v
 test('keyboard order, disclosure operation, validation focus, and completion focus are coherent', async ({ page, browserName }) => {
   await page.keyboard.press('Tab');
   if (browserName === 'webkit') {
-    // WebKit's default tab model omits ordinary links unless full keyboard
-    // access is enabled, but it must still reach every form control.
-    await expectVisibleKeyboardFocus(page.locator('#choose-package'));
+    // WebKit's host keyboard model may include ordinary links or begin at the
+    // first form control. Both paths must preserve DOM order and reach controls.
+    const home = page.getByRole('link', { name: 'ContentLedger Checker home' });
+    if (await home.evaluate(element => document.activeElement === element)) {
+      await expectVisibleKeyboardFocus(home);
+      await page.keyboard.press('Tab');
+    }
   } else {
     await expectVisibleKeyboardFocus(page.getByRole('link', { name: 'ContentLedger Checker home' }));
     await page.keyboard.press('Tab');

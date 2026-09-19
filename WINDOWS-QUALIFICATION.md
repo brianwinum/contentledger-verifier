@@ -64,7 +64,7 @@ forced-colors checks were skipped.
 | Coverage | Observed result | Status |
 | --- | --- | --- |
 | WCAG A/AA Axe scan | No violations reported in the initial, expanded-comparison, invalid-input, or completed-result states in all five engines | Passed with automated-scan limitation |
-| Keyboard path | Header/chooser/disclosure/field order, native disclosure operation, implicit Enter submission, and absence of a tested focus trap passed; default WebKit appropriately begins at the first form control unless full keyboard access is enabled | Passed |
+| Keyboard path | Header/chooser/disclosure/field order, native disclosure operation, implicit Enter submission, and absence of a tested focus trap passed; WebKit either includes the header link or begins at the first form control according to the host keyboard model | Passed |
 | Validation focus | Invalid comparison value exposed `role=alert`, `aria-invalid`, and `aria-errormessage`, then returned focus to the field | Passed |
 | Completion focus and announcement | Completed failure focused the result summary and populated the polite status announcement | Passed |
 | 200%/400%-equivalent reflow | Completed interface at 640- and 320-CSS-pixel viewport widths had no document-level horizontal overflow and retained usable chooser/report controls | Passed |
