@@ -5,22 +5,26 @@
   "type": "module",
   "license": "GPL-2.0-or-later",
   "description": "Local-only browser verification of ContentLedger Evidence Bundle v3 packages",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 1430",
     "build": "tsc --noEmit && vite build --outDir dist-browser",
     "preview": "vite preview --outDir dist-browser --host 127.0.0.1 --port 1431",
+    "preview:e2e": "vite preview --outDir dist-browser --host 127.0.0.1 --port 1472 --strictPort",
     "check": "tsc --noEmit",
     "test:unit": "tsx --test src/*.test.ts src/verifier/*.test.ts tests/*.test.ts",
     "test:boundary": "node --test scripts/public-boundary.test.mjs",
     "test:provenance": "node --test scripts/browser-provenance.test.mjs scripts/browser-release.test.mjs",
     "test:build": "npm run build && node --test scripts/browser-build.test.mjs",
+    "test:e2e": "npm run build && playwright test",
     "test": "npm run test:unit && npm run test:boundary && npm run test:provenance && npm run test:build",
     "release:check": "node scripts/browser-release.mjs",
     "release:verify": "node scripts/browser-release.mjs verify"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "26.6.1",
     "tsx": "4.23.13",
     "typescript": "7.0.2",

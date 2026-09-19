@@ -13,12 +13,16 @@ Requirements: Node.js 24 or newer and npm.
 ```text
 npm ci --ignore-scripts
 npm test
+npx playwright install chromium firefox webkit
+npm run test:e2e
 npm run dev
 ```
 
 Open `http://127.0.0.1:1430/`. A production-like static build is created with `npm run build` in `dist-browser/`; `npm run preview` serves it on `http://127.0.0.1:1431/`.
 
 No environment files or runtime network dependencies are accepted by the production build. The generated Content Security Policy sets `connect-src 'none'`.
+
+`npm run test:e2e` builds the production-like static application, starts it on loopback, and exercises package selection, verification, negative packages, cancellation, repeated checks, report downloads, drag/drop, the 128 MiB limit, and observed verification-time network silence. Chromium and Firefox complete the signed-package workflow. Playwright WebKit is also exercised: it must complete the same signed-package checks when its host provides the qualified Ed25519 WebCrypto capability, or fail closed with `browser_ed25519_unavailable` when that capability is absent. These automated engines complement, but do not replace, qualification in current branded browsers or real Safari on macOS.
 
 ## GitHub Pages development preview
 

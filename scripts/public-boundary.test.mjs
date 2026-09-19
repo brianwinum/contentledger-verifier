@@ -7,11 +7,11 @@ import { join, relative } from 'node:path';
 import test from 'node:test';
 
 const root = realpathSync(fileURLToPath(new URL('../', import.meta.url)));
-const ignoredRoots = new Set(['node_modules', 'dist-browser', 'build-output', '.git']);
+const ignoredRoots = new Set(['node_modules', 'dist-browser', 'build-output', 'playwright-report', 'test-results', '.git']);
 const allowedRoots = new Set([
-  '.github', '.gitignore', 'CONTRIBUTING.md', 'LICENSE', 'README.md', 'SECURITY.md', 'THIRD-PARTY-NOTICES.md',
+  '.github', '.gitattributes', '.gitignore', 'CONTRIBUTING.md', 'LICENSE', 'README.md', 'SECURITY.md', 'THIRD-PARTY-NOTICES.md',
   'WINDOWS-QUALIFICATION.md',
-  'index.html', 'package-lock.json', 'package.json', 'schemas', 'scripts', 'specifications', 'src', 'tests',
+  'e2e', 'index.html', 'package-lock.json', 'package.json', 'playwright.config.ts', 'schemas', 'scripts', 'specifications', 'src', 'tests',
   'tsconfig.json', 'vite.config.ts', ...ignoredRoots,
 ]);
 

@@ -4,3 +4,5 @@ build-output/
 .env
 .env.*
 *.log
+playwright-report/
+test-results/
