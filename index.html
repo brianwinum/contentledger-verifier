@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>ContentLedger Checker</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <a class="wordmark" href="#main" aria-label="ContentLedger Checker home">
+          <svg class="brand-mark" width="35" height="38" viewBox="0 0 35 38" fill="none" aria-hidden="true"><path d="M17.5 2 32 10.4v16.8L17.5 36 3 27.2V10.4L17.5 2Z" stroke="currentColor" stroke-width="2.4"/><path d="m10 15 7.5 4.5L25 15M17.5 19.5V29M10 10.5l7.5 4.5 7.5-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>ContentLedger<span class="wordmark-subtitle">PACKAGE CHECKER</span></span>
+        </a>
+        <span class="offline-pill"><span></span> <span id="connection-label">Works offline</span></span>
+      </header>
+
+      <div id="preview-banner" class="preview-banner" hidden>Browser verifier development build.</div>
+      <noscript><p class="preview-banner">JavaScript is required to check a package locally. No package has been checked. No evidence is uploaded by this checker.</p></noscript>
+      <main id="main">
+        <div class="intro">
+          <p id="intro-eyebrow" class="eyebrow">OFFLINE PACKAGE VERIFICATION</p>
+          <h1>Check an evidence package.</h1>
+          <p id="intro-copy" class="intro-copy">Check a ContentLedger evidence package on your computer. Get a clear explanation of what checks out—and what it can tell you.</p>
+        </div>
+
+        <div class="workspace">
+          <section class="check-panel" aria-labelledby="package-heading">
+            <div class="section-heading"><span class="step-number">01</span><h2 id="package-heading">Choose your package</h2><span class="file-type">ZIP FILE</span></div>
+            <button id="choose-package" class="dropzone" type="button" aria-describedby="supported-packages privacy-note">
+              <span class="upload-symbol" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none"><path d="M12 16V3m0 0L7 8m5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <strong id="drop-title">Drop an evidence package here</strong>
+              <span id="drop-description">or <span class="link-text">choose a file</span> from your computer</span>
+              <span id="selected-size" class="selected-size" hidden></span>
+            </button>
+            <p id="supported-packages" class="support-note">Evidence Bundle v3 · Record, URL history, checkpoint, or currently checkpointed site.</p>
+
+            <details id="expectations-section" class="expectations-section">
+              <summary><span>Compare with trusted information</span><span class="optional">Optional</span></summary>
+              <div class="expectations-content">
+                <p>Have a value from someone you trust, obtained separately from this package? Add it here for an independent comparison.</p>
+                <form id="expectations-form" novalidate>
+                  <fieldset id="expectations-fields">
+                    <label for="bundle-sha256">Package SHA-256 <span class="field-recommendation">Recommended</span></label>
+                    <input id="bundle-sha256" name="bundleSha256" type="text" spellcheck="false" autocomplete="off" maxlength="64" placeholder="64-character fingerprint of the exact ZIP file" aria-describedby="bundle-help" />
+                    <p id="bundle-help" class="field-help">A match confirms that this is the exact package expected by your trusted source.</p>
+                    <label for="checkpoint-sha256">Checkpoint SHA-256</label>
+                    <input id="checkpoint-sha256" name="checkpointSha256" type="text" spellcheck="false" autocomplete="off" maxlength="64" placeholder="64-character checkpoint fingerprint" />
+                    <label for="manifest-sha256">Manifest SHA-256</label>
+                    <input id="manifest-sha256" name="manifestSha256" type="text" spellcheck="false" autocomplete="off" maxlength="64" placeholder="64-character manifest fingerprint" />
+                    <label for="expected-did">Website identity (DID)</label>
+                    <input id="expected-did" name="did" type="text" spellcheck="false" autocomplete="off" maxlength="2048" placeholder="did:webvh:…" aria-describedby="did-help" />
+                    <p id="did-help" class="field-help">Checks for a carried identity. This does not select or authenticate a particular record's signer.</p>
+                    <label for="record-uuid">Record UUID</label>
+                    <input id="record-uuid" name="recordUuid" type="text" spellcheck="false" autocomplete="off" maxlength="36" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+                    <p class="field-help comparison-note">Each value is checked independently. Matching a record UUID and a manifest fingerprint does not prove they belong to the same record.</p>
+                  </fieldset>
+                </form>
+              </div>
+            </details>
+
+            <p id="input-error" class="input-error" role="alert" hidden></p>
+            <div class="check-actions">
+              <button id="verify-package" class="button button-primary" type="submit" form="expectations-form" disabled><span>Check package</span><span aria-hidden="true">→</span></button>
+              <button id="cancel-check" class="button button-quiet" type="button" hidden>Cancel</button>
+            </div>
+            <p id="privacy-note" class="privacy-note"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden="true"><rect x="2" y="7" width="10" height="8" rx="2" stroke="currentColor"/><path d="M4 7V4a3 3 0 0 1 6 0v3" stroke="currentColor"/></svg><span id="privacy-copy">A private temporary copy is used for checking. Nothing is uploaded.</span></p>
+          </section>
+
+          <aside class="explainer" aria-labelledby="explainer-heading">
+            <span class="aside-line" aria-hidden="true"></span>
+            <p class="eyebrow">HOW IT WORKS</p>
+            <h2 id="explainer-heading">Understand the evidence<br />behind the package.</h2>
+            <p id="explainer-copy">The checker examines the package's contents, carried signatures, and identity history, where present.</p>
+            <ol class="how-it-works">
+              <li><span class="how-icon" aria-hidden="true">01</span><div><h3>Choose a package</h3><p>Use the original ZIP you received.</p></div></li>
+              <li><span class="how-icon" aria-hidden="true">02</span><div><h3 id="run-checks-label">Run the offline checks</h3><p id="run-checks-copy">No account or internet connection needed.</p></div></li>
+              <li><span class="how-icon" aria-hidden="true">03</span><div><h3>Read the result</h3><p id="read-result-copy">See what passed and any limitations.</p></div></li>
+            </ol>
+            <div class="scope-note"><strong>Have an Identity Recovery Pack?</strong><p>Keep it private. This checker accepts public evidence bundles only; it cannot check recovery packs or private keys.</p></div>
+          </aside>
+        </div>
+
+        <section id="result-section" class="result-section" aria-labelledby="result-title" hidden>
+          <div id="result-summary" class="result-summary" tabindex="-1">
+            <span id="result-symbol" class="result-symbol" aria-hidden="true"></span>
+            <div><p id="result-eyebrow" class="eyebrow">CHECK COMPLETE</p><h2 id="result-title"></h2><p id="result-description"></p></div>
+          </div>
+          <div id="busy-status" hidden><div class="progress-track"><span></span></div><p id="busy-copy">Reading the package and checking its evidence. Larger packages may take a moment.</p></div>
+          <div id="completed-result" hidden>
+            <div class="result-meta"><span id="result-file"></span><span id="result-time"></span></div>
+            <div id="limitations" class="limitations"><h3>What this result does not establish</h3><p>Ownership, authorship, human identity, exclusive key custody, first publication, or the truth of the content. It also does not establish the latest website state, completeness beyond this package, trusted time, Bitcoin consensus, or current archive availability.</p><p id="evidence-limitations-copy">Original article text is not reproduced or independently checked against its content digest. Timestamp proofs, when present, are checked for structure only; archive references are retained metadata.</p></div>
+            <details class="technical-details"><summary><span>See the individual checks</span><span id="check-count" class="check-count"></span></summary><div id="check-list" class="check-list"></div></details>
+            <details class="technical-details"><summary><span>Package fingerprint &amp; check information</span></summary><dl id="package-information" class="package-information"></dl></details>
+            <div class="report-actions"><div><h3>Keep a record of this check</h3><p>Save a local summary with the result and package fingerprint. Filenames, paths, comparison values, and raw evidence details are omitted. This is not a signed attestation.</p></div><button id="save-report" class="button button-secondary" type="button">Save report</button></div>
+          </div>
+        </section>
+        <details id="browser-build-details" class="technical-details browser-build-details" hidden>
+          <summary><span>About this checker build</span></summary>
+          <p id="browser-build-status"></p>
+          <dl id="browser-build-information" class="package-information"></dl>
+          <p class="build-disclaimer">This identifies the build-source snapshot, not your evidence package. It is not a publisher signature or an independent audit of the running code. Source revision and public release links are not available for this unpublished development build.</p>
+        </details>
+        <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p id="report-status" class="report-status" role="status" hidden></p>
+      </main>
+      <footer class="app-footer"><span>ContentLedger Checker <span id="app-version">· Preview</span></span><span id="footer-note">Offline verification. No account needed.</span></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

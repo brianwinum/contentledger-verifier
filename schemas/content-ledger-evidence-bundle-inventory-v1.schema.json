@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wp-contentledger:schema:evidence-bundle-inventory:1",
+  "title": "WP ContentLedger Evidence Bundle Inventory v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["algorithm", "entries", "format", "version"],
+  "properties": {
+    "algorithm": { "const": "sha-256" },
+    "entries": {
+      "type": "array",
+      "maxItems": 16382,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "format": { "const": "WP ContentLedger Evidence Bundle Inventory" },
+    "version": { "const": "1.0" }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mediaType", "path", "sha256", "size"],
+      "properties": {
+        "mediaType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[ -~]+$"
+        },
+        "path": { "$ref": "#/$defs/path" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size": { "type": "integer", "minimum": 0, "maximum": 134217728 }
+      }
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "oneOf": [
+        { "const": "VERIFY.txt" },
+        { "pattern": "^[a-z0-9._/-]+$" }
+      ]
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wp-contentledger:schema:transparency-inclusion-proof:1",
+  "title": "WP ContentLedger Transparency Inclusion Proof v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["checkpointSha256", "format", "leaf", "leafHash", "leafIndex", "path", "tree", "version"],
+  "properties": {
+    "checkpointSha256": { "$ref": "#/$defs/hash" },
+    "format": { "const": "WP ContentLedger Transparency Inclusion Proof" },
+    "version": { "const": "1.0" },
+    "leaf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entryId", "manifestDigest"],
+      "properties": {
+        "entryId": { "type": "string", "pattern": "^urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$" },
+        "manifestDigest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "value"],
+          "properties": {
+            "algorithm": { "const": "sha-256" },
+            "value": { "$ref": "#/$defs/hash" }
+          }
+        }
+      }
+    },
+    "leafHash": { "$ref": "#/$defs/hash" },
+    "leafIndex": { "type": "integer", "minimum": 0, "maximum": 9999 },
+    "path": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["hash", "side"],
+        "properties": {
+          "hash": { "$ref": "#/$defs/hash" },
+          "side": { "enum": ["left", "right"] }
+        }
+      }
+    },
+    "tree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "leafCount", "rootHash"],
+      "properties": {
+        "algorithm": { "const": "rfc6962-sha256-v1" },
+        "leafCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "rootHash": { "$ref": "#/$defs/hash" }
+      }
+    }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

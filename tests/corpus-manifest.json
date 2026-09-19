@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "kind": "contentledger-public-conformance-corpus",
+  "generatedBy": "WP ContentLedger 0.13.12 synthetic test exporter",
+  "fixtures": [
+    { "file": "checkpoint.zip", "bytes": 44350, "sha256": "4e1dfb0ca8e8fb8ea5057dab3ff4532234a94811e703d0d441e8f68143141523", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "invalid-archive-reference.zip", "bytes": 49741, "sha256": "5920d9c7672ea62a2b8e6a03cd21f62916a8749b4ffdfb5af8f4fcd592862ad9", "outcome": "failed", "code": "archive_reference_item" },
+    { "file": "invalid-inclusion.zip", "bytes": 43936, "sha256": "b6794d62d276476f491f87c7c6bbf26d7fc8baeade7ee15f0496c3c0e97740d3", "outcome": "failed", "code": "inclusion_checkpoint_binding" },
+    { "file": "invalid-scope.zip", "bytes": 42564, "sha256": "877a4e3b9c7262fa4a118ca7e709842de220b5e0bbef01184a43722e33e867e9", "outcome": "failed", "code": "scope_checkpoint_closure" },
+    { "file": "invalid-signature.zip", "bytes": 43936, "sha256": "537a1cbea4189569fffd8ff7ea149277f0803e500d5c6ca393545853f42ff1d2", "outcome": "failed", "code": "jws_signature_invalid" },
+    { "file": "invalid-timestamp.zip", "bytes": 49744, "sha256": "424f26cd5e875b7a961cf8d7079ce166b63df3f9acc1221e234d8b88ff51f095", "outcome": "failed", "code": "ots_digest" },
+    { "file": "record.zip", "bytes": 43936, "sha256": "9a4f17bd8df7e97bff4f3a1438daa8a82efeae197cd5946b198bd43a0b141644", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "site-chain.zip", "bytes": 76492, "sha256": "2f954c30e6ae3b6e41b3645cabdd84099497aa1c06ed8b9e115f61188654b018", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "site.zip", "bytes": 47240, "sha256": "6618704b107cdb86c1f42200293c366ef223e67f7a145c64e523559433c271ee", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "supporting-artifacts.zip", "bytes": 49744, "sha256": "59ba00e3133d3493a11b2342745799da5f47f7203412a42d3fdce22c06886960", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "tampered-record.zip", "bytes": 43936, "sha256": "bea28113f4a2ca13e2f4f02c9e952dae833765d56c16f56bb439a37f367a6b42", "outcome": "failed", "code": "zip_crc" },
+    { "file": "url-history.zip", "bytes": 48534, "sha256": "ba37337c156f7d186ada2dd6077d3f82b1c426408240b0e681aff08b6ade6166", "outcome": "passed_with_limitations", "code": "browser_profile_checks_complete" },
+    { "file": "wrong-profile.zip", "bytes": 43936, "sha256": "d41de91255d1d9eca2b9e42212bbc27553cc6e3afee02e68b09a96cfbea0d8fe", "outcome": "failed", "code": "bundle_profile" }
+  ]
+}

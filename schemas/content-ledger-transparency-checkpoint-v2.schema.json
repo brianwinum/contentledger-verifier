@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wp-contentledger:schema:transparency-checkpoint:2",
+  "title": "WP ContentLedger Native did:webvh Transparency Checkpoint v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "identity", "predecessor", "recordedThrough", "scope", "tree", "version"],
+  "properties": {
+    "format": { "const": "WP ContentLedger Transparency Checkpoint" },
+    "identity": { "$ref": "#/$defs/identity" },
+    "predecessor": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checkpointSha256", "consistencyProof", "leafCount", "rootHash"],
+          "properties": {
+            "checkpointSha256": { "$ref": "#/$defs/hash" },
+            "consistencyProof": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/hash" } },
+            "leafCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
+            "rootHash": { "$ref": "#/$defs/hash" }
+          }
+        }
+      ]
+    },
+    "recordedThrough": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identityEventRecordedAt", "manifestSealedAt"],
+      "properties": {
+        "identityEventRecordedAt": { "$ref": "#/$defs/utcSecond" },
+        "manifestSealedAt": { "type": "string", "format": "date-time", "maxLength": 64 }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifestDigestAlgorithm", "recordIdentifier", "selection"],
+      "properties": {
+        "manifestDigestAlgorithm": { "const": "sha-256" },
+        "recordIdentifier": { "const": "entryId" },
+        "selection": { "const": "all-sealed-contentledger-manifests" }
+      }
+    },
+    "tree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "leafCanonicalization", "leafCount", "rootHash"],
+      "properties": {
+        "algorithm": { "const": "rfc6962-sha256-v1" },
+        "leafCanonicalization": { "const": "wp-contentledger-transparency-leaf-v1" },
+        "leafCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "rootHash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "version": { "const": "2.0" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertionMethod", "did", "entryCount", "logBytes", "logSha256", "publicKeyJwk", "publicUrl", "siteUrl", "stateSha256", "versionId", "versionTime"],
+      "properties": {
+        "assertionMethod": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "did": { "type": "string", "pattern": "^did:webvh:", "maxLength": 2048 },
+        "entryCount": { "type": "integer", "minimum": 1, "maximum": 128 },
+        "logBytes": { "type": "integer", "minimum": 2, "maximum": 16777216 },
+        "logSha256": { "$ref": "#/$defs/hash" },
+        "publicKeyJwk": { "$ref": "#/$defs/jwk" },
+        "publicUrl": { "type": "string", "format": "uri", "maxLength": 8192 },
+        "siteUrl": { "type": "string", "format": "uri", "maxLength": 8192 },
+        "stateSha256": { "$ref": "#/$defs/hash" },
+        "versionId": { "type": "string", "pattern": "^[1-9][0-9]{0,2}-[A-Za-z0-9_-]+$", "maxLength": 256 },
+        "versionTime": { "$ref": "#/$defs/utcSecond" }
+      }
+    },
+    "jwk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["crv", "kty", "x"],
+      "properties": {
+        "crv": { "const": "Ed25519" },
+        "kty": { "const": "OKP" },
+        "x": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" }
+      }
+    },
+    "utcSecond": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" }
+  }
+}

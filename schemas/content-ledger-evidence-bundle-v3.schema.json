@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wp-contentledger:schema:evidence-bundle:3",
+  "title": "WP ContentLedger Native did:webvh Evidence Bundle v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["checkpoints", "format", "identityLogs", "leafInventories", "profile", "records", "scope", "version"],
+  "properties": {
+    "checkpoints": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/checkpoint" } },
+    "format": { "const": "WP ContentLedger Evidence Bundle" },
+    "identityLogs": { "type": "array", "maxItems": 128, "items": { "$ref": "#/$defs/identityLog" } },
+    "leafInventories": { "type": "array", "maxItems": 1, "items": { "$ref": "#/$defs/leafInventory" } },
+    "profile": { "const": "contentledger-evidence-bundle-native-webvh-v1" },
+    "records": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/record" } },
+    "scope": {
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["entryId", "kind"], "properties": { "entryId": { "$ref": "#/$defs/entryId" }, "kind": { "const": "record" } } },
+        { "type": "object", "additionalProperties": false, "required": ["kind", "url"], "properties": { "kind": { "const": "url-history" }, "url": { "type": "string", "format": "uri", "maxLength": 8192 } } },
+        { "type": "object", "additionalProperties": false, "required": ["checkpointSha256", "kind"], "properties": { "checkpointSha256": { "$ref": "#/$defs/sha256" }, "kind": { "enum": ["checkpoint", "site"] } } }
+      ]
+    },
+    "version": { "const": "3.0" }
+  },
+  "$defs": {
+    "checkpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["archiveReferencePath", "checkpointSha256", "documentPath", "identityReceiptSha256", "jwsPath", "predecessorCheckpointSha256", "timestampPaths"],
+      "properties": {
+        "archiveReferencePath": { "$ref": "#/$defs/nullablePath" }, "checkpointSha256": { "$ref": "#/$defs/sha256" }, "documentPath": { "$ref": "#/$defs/path" },
+        "identityReceiptSha256": { "$ref": "#/$defs/sha256" }, "jwsPath": { "$ref": "#/$defs/path" },
+        "predecessorCheckpointSha256": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }] }, "timestampPaths": { "$ref": "#/$defs/paths" }
+      }
+    },
+    "identityLog": {
+      "type": "object", "additionalProperties": false,
+      "required": ["archiveReferencePath", "assertionMethod", "did", "logPath", "logSha256", "receiptPath", "receiptSha256", "timestampPaths", "versionId", "versionTime"],
+      "properties": {
+        "archiveReferencePath": { "$ref": "#/$defs/nullablePath" }, "assertionMethod": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "did": { "type": "string", "pattern": "^did:webvh:", "maxLength": 2048 }, "logPath": { "$ref": "#/$defs/path" }, "logSha256": { "$ref": "#/$defs/sha256" },
+        "receiptPath": { "$ref": "#/$defs/path" }, "receiptSha256": { "$ref": "#/$defs/sha256" }, "timestampPaths": { "$ref": "#/$defs/paths" },
+        "versionId": { "type": "string", "maxLength": 256 }, "versionTime": { "type": "string", "format": "date-time", "maxLength": 64 }
+      }
+    },
+    "leafInventory": { "type": "object", "additionalProperties": false, "required": ["checkpointSha256", "path"], "properties": { "checkpointSha256": { "$ref": "#/$defs/sha256" }, "path": { "$ref": "#/$defs/path" } } },
+    "record": {
+      "type": "object", "additionalProperties": false,
+      "required": ["archiveReferencePath", "entryId", "inclusionProofPaths", "manifestPath", "manifestSha256", "signaturePath", "timestampPaths"],
+      "properties": {
+        "archiveReferencePath": { "$ref": "#/$defs/nullablePath" }, "entryId": { "$ref": "#/$defs/entryId" }, "inclusionProofPaths": { "$ref": "#/$defs/paths" },
+        "manifestPath": { "$ref": "#/$defs/path" }, "manifestSha256": { "$ref": "#/$defs/sha256" }, "signaturePath": { "$ref": "#/$defs/nullablePath" }, "timestampPaths": { "$ref": "#/$defs/paths" }
+      }
+    },
+    "entryId": { "type": "string", "pattern": "^urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$" },
+    "nullablePath": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/path" }] },
+    "path": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "^[a-z0-9._/-]+$" },
+    "paths": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/path" } },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

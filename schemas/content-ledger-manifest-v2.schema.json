@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wp-contentledger:schema:manifest:2",
+  "title": "WP ContentLedger Origin Evidence Manifest v2",
+  "description": "An immutable origin-evidence manifest whose integrity, signing, and timestamp lifecycle does not depend on third-party archival success.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "digests",
+    "entryId",
+    "evidenceScope",
+    "generator",
+    "limitations",
+    "manifestVersion",
+    "provenance",
+    "sealedAt",
+    "subject"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "format": "uri" },
+    "chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "previousManifestDigest"],
+      "properties": {
+        "algorithm": { "const": "sha-256" },
+        "previousManifestDigest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "digests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["algorithm", "canonicalization", "scope", "value"],
+        "properties": {
+          "algorithm": { "const": "sha-256" },
+          "canonicalization": { "type": "string" },
+          "mediaType": { "type": "string" },
+          "retrievedAt": { "type": "string", "format": "date-time" },
+          "scope": { "enum": ["canonical-content", "public-representation"] },
+          "value": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "entryId": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "evidenceScope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["canonical-content-integrity", "publisher-controlled-recording"]
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "WP ContentLedger" },
+        "version": { "type": "string" }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "manifestVersion": { "const": "2.0" },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceCapturedAt", "recordSource", "sealedFromPreviouslyCapturedEvidence"],
+      "properties": {
+        "evidenceCapturedAt": { "type": "string", "format": "date-time" },
+        "recordSource": { "type": "string" },
+        "sealedFromPreviouslyCapturedEvidence": { "type": "boolean" }
+      }
+    },
+    "sealedAt": { "type": "string", "format": "date-time" },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalUrl", "postType", "publisher", "title", "type"],
+      "properties": {
+        "author": { "$ref": "#/$defs/namedResource" },
+        "canonicalUrl": { "type": "string", "format": "uri" },
+        "dateModified": { "type": "string", "format": "date-time" },
+        "datePublished": { "type": "string", "format": "date-time" },
+        "description": { "type": "string" },
+        "featuredImage": { "type": "string", "format": "uri" },
+        "language": { "type": "string" },
+        "postType": { "type": "string" },
+        "publisher": { "$ref": "#/$defs/namedResource" },
+        "taxonomies": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "slug"],
+              "properties": {
+                "name": { "type": "string" },
+                "slug": { "type": "string" }
+              }
+            }
+          }
+        },
+        "title": { "type": "string" },
+        "type": { "const": "WebPage" }
+      }
+    }
+  },
+  "$defs": {
+    "namedResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url"],
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

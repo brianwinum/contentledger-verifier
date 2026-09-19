@@ -1,0 +1,5 @@
+WP ContentLedger Evidence Bundle v3 — native did:webvh
+
+Start with inventory.sha256, then validate inventory.json and every listed byte digest before interpreting bundle.json.
+Use WP ContentLedger Portable Verifier 3.0.0 or an independent implementation of the packaged schemas and CONTENTLEDGER-EVIDENCE-BUNDLE-v3 specification. No executable verifier is embedded in this archive.
+A valid bundle proves internal byte integrity and the cryptographic statements it contains. It does not prove authorship, ownership, trusted wall-clock time, complete Internet publication, exclusive custody, or uncompromised keys.

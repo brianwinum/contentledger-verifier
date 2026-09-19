@@ -1,0 +1,23 @@
+:root {
+  --font: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --paper: #ffffff;
+  --canvas: #ffffff;
+  --ink: #111111;
+  --muted: #555555;
+  --brand-accent: #b3251e;
+  --brand-accent-hover: #8f1d18;
+  --surface-soft: #f7f7f7;
+  --surface-muted: #eeeeee;
+  --line: #e2e2e2;
+  --control-border: #858585;
+  --focus: #b3251e;
+  --status-positive-ink: #2f6543;
+  --status-positive-background: #edf6ef;
+  --status-positive-border: #cfe1d2;
+  --status-limited-ink: #785615;
+  --status-limited-background: #fff8e8;
+  --status-limited-border: #e9d9af;
+  --status-negative-ink: #8f201a;
+  --status-negative-background: #fff2f0;
+  --status-negative-border: #e9c6c0;
+}
