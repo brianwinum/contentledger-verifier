@@ -67,17 +67,22 @@ test('initial, comparison, validation, and result states have no WCAG A/AA Axe v
 });
 
 test('keyboard order, disclosure operation, validation focus, and completion focus are coherent', async ({ page, browserName }) => {
+  const header = page.getByRole('banner');
+  await expect(header.getByRole('link', { name: 'WP ContentLedger home', exact: true })).toHaveAttribute('href', 'https://wpcontentledger.com/');
+  const main = page.locator('#main');
+  await expect(main).toHaveAttribute('tabindex', '-1');
+  const skip = page.getByRole('link', { name: 'Skip to content', exact: true });
+  await expect(skip).toHaveAttribute('href', '#main');
   await page.keyboard.press('Tab');
-  if (browserName === 'webkit') {
+  if (browserName === 'webkit' && !(await skip.evaluate(element => document.activeElement === element))) {
     // WebKit's host keyboard model may include ordinary links or begin at the
-    // first form control. Both paths must preserve DOM order and reach controls.
-    const home = page.getByRole('link', { name: 'ContentLedger Checker home' });
-    if (await home.evaluate(element => document.activeElement === element)) {
-      await expectVisibleKeyboardFocus(home);
-      await page.keyboard.press('Tab');
-    }
+    // first form control. Both paths must reach the checker without requiring
+    // a brittle count of header links (the repository CTA is responsive).
+    await expectVisibleKeyboardFocus(page.locator('#choose-package'));
   } else {
-    await expectVisibleKeyboardFocus(page.getByRole('link', { name: 'ContentLedger Checker home' }));
+    await expectVisibleKeyboardFocus(skip);
+    await skip.press('Enter');
+    await expect(main).toBeFocused();
     await page.keyboard.press('Tab');
   }
   await expectVisibleKeyboardFocus(page.locator('#choose-package'));

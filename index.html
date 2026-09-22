@@ -4,22 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
-    <title>ContentLedger Checker</title>
+    <title>Package Checker | WP ContentLedger</title>
+    <meta name="description" content="Check a public ContentLedger evidence package locally in your browser. Inspect supported evidence checks and their limitations without uploading your file." />
+    <meta name="theme-color" content="#111111" />
+    <link rel="icon" type="image/svg+xml" href="./src/assets/favicon.svg?no-inline" />
   </head>
   <body>
     <div class="app-shell">
-      <header class="app-header">
-        <a class="wordmark" href="#main" aria-label="ContentLedger Checker home">
-          <svg class="brand-mark" width="35" height="38" viewBox="0 0 35 38" fill="none" aria-hidden="true"><path d="M17.5 2 32 10.4v16.8L17.5 36 3 27.2V10.4L17.5 2Z" stroke="currentColor" stroke-width="2.4"/><path d="m10 15 7.5 4.5L25 15M17.5 19.5V29M10 10.5l7.5 4.5 7.5-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>ContentLedger<span class="wordmark-subtitle">PACKAGE CHECKER</span></span>
-        </a>
-        <span class="offline-pill"><span></span> <span id="connection-label">Works offline</span></span>
-      </header>
+      <a class="skip-link" href="#main">Skip to content</a>
+      <header class="site-header container" id="top"><a class="brand" href="https://wpcontentledger.com/" aria-label="WP ContentLedger home"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M8 3h11l6 6v20H8V3Z" stroke="currentColor" stroke-width="2"/><path d="M19 3v7h6M12 19l3 3 7-8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span><span class="wordmark">WP ContentLedger</span><span class="brand-sub">Publication evidence for WordPress</span></span></a><nav aria-label="Main navigation"><a href="https://wpcontentledger.com/#overview">Overview</a><a href="https://wpcontentledger.com/#how-it-works">How it works</a><a href="https://wpcontentledger.com/#faq">FAQ</a></nav><a class="button button-primary header-cta" href="https://certificates.wpcontentledger.com/">Certificate Repository <span aria-hidden="true">→</span></a></header>
 
-      <div id="preview-banner" class="preview-banner" hidden>Browser verifier development build.</div>
-      <noscript><p class="preview-banner">JavaScript is required to check a package locally. No package has been checked. No evidence is uploaded by this checker.</p></noscript>
-      <main id="main">
+      <div id="preview-banner" class="preview-banner container" hidden>Browser verifier development build.</div>
+      <noscript><p class="preview-banner container">JavaScript is required to check a package locally. No package has been checked. No evidence is uploaded by this checker.</p></noscript>
+      <main id="main" class="container verifier-main" tabindex="-1">
         <div class="intro">
+          <span class="offline-pill"><span></span> <span id="connection-label">Runs locally in your browser</span></span>
           <p id="intro-eyebrow" class="eyebrow">OFFLINE PACKAGE VERIFICATION</p>
           <h1>Check an evidence package.</h1>
           <p id="intro-copy" class="intro-copy">Check a ContentLedger evidence package on your computer. Get a clear explanation of what checks out—and what it can tell you.</p>
@@ -100,12 +99,202 @@
           <summary><span>About this checker build</span></summary>
           <p id="browser-build-status"></p>
           <dl id="browser-build-information" class="package-information"></dl>
+          <details class="technical-details font-license-details"><summary><span>Typography licenses</span></summary><pre>Copyright 2020 The Libre Franklin Project Authors (https://github.com/googlefonts/Libre-Franklin)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+
+Copyright © 2017 IBM Corp. with Reserved Font Name "Plex"
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+
+This license is copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+</pre></details>
           <p class="build-disclaimer">This identifies the build-source snapshot, not your evidence package. It is not a publisher signature or an independent audit of the running code. Source revision and public release links are not available for this unpublished development build.</p>
         </details>
         <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
         <p id="report-status" class="report-status" role="status" hidden></p>
+        <div class="checker-build-note"><span>ContentLedger Checker <span id="app-version">· Preview</span></span><span id="footer-note">Offline verification. No account needed.</span></div>
       </main>
-      <footer class="app-footer"><span>ContentLedger Checker <span id="app-version">· Preview</span></span><span id="footer-note">Offline verification. No account needed.</span></footer>
+      <footer class="site-footer container"><div class="footer-top"><div><a class="brand" href="https://wpcontentledger.com/" aria-label="WP ContentLedger home"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M8 3h11l6 6v20H8V3Z" stroke="currentColor" stroke-width="2"/><path d="M19 3v7h6M12 19l3 3 7-8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span><span class="wordmark">WP ContentLedger</span><span class="brand-sub">Publication evidence for WordPress</span></span></a><p>Publication evidence for WordPress.</p></div><nav class="footer-links" aria-label="Project resources"><a href="https://certificates.wpcontentledger.com/">Certificate Repository</a><a href="https://certificates.wpcontentledger.com/methodology">About the evidence</a><a href="https://verify.wpcontentledger.com/">Package checker</a><a href="https://brianwinum.com/wp-contentledger/">Project background</a><a href="https://brianwinum.com/contact/?topic=contentledger">Contact</a><a href="#top">Back to top <span aria-hidden="true">↑</span></a></nav></div><div class="footer-bottom"><p>A project by <a href="https://brianwinum.com/">Brian Winum</a>.</p><span class="mono">A RECORD OF PUBLICATION.</span></div></footer>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
