@@ -29,7 +29,7 @@ function textBody(name: string): string {
 
 test('page has a language, meaningful title, one main landmark and zoomable viewport', () => {
   assert.equal(tags.find(item => item.name === 'html')?.attrs.lang, 'en');
-  assert.match(html, /<title>ContentLedger Checker<\/title>/);
+  assert.match(html, /<title>Package Checker \| WP ContentLedger<\/title>/);
   assert.equal(tags.filter(item => item.name === 'main').length, 1);
   assert.equal(tags.filter(item => item.name === 'h1').length, 1);
   assert.equal(tag('main').name, 'main');

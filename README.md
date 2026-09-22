@@ -41,6 +41,12 @@ The canonical public source repository is `brianwinum/contentledger-verifier`. T
 
 GitHub Pages only serves the static HTML, CSS, and JavaScript. Package selection, hashing, and verification remain in browser memory; the production audit rejects application network APIs, and the generated CSP blocks connections. Hosting the app does not make the development preview release-qualified or independently audited.
 
+## Shared site presentation
+
+The header, footer, local fonts, and `src/site-shell.css` mirror the WP ContentLedger root site and certificate repository. This repository carries its own reviewed static copies; the production build does not import another project or fetch remote fonts. `src/site-integration.css` adapts that shared presentation to the checker controls, results, and narrow layouts. Typography licenses are included under `src/assets/` and in **About this checker build → Typography licenses**.
+
+When refreshing shared presentation, preserve checker IDs, native controls, evidence status semantics, and keyboard focus. Keep every production input in `BROWSER_SOURCE_PATHS`, and run the existing build/privacy and browser accessibility checks. Cross-site links are ordinary user-activated navigation restricted to exact reviewed destinations by the production audit; package checking itself remains local and cannot initiate network connections.
+
 ## Repository boundary
 
 This project contains only browser verifier source, public specifications and schemas, and synthetic public evidence packages used for conformance tests. It intentionally excludes:

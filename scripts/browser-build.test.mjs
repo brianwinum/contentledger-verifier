@@ -12,6 +12,20 @@ const output = process.env.CONTENTLEDGER_BROWSER_AUDIT_OUTPUT
   ? resolve(process.env.CONTENTLEDGER_BROWSER_AUDIT_OUTPUT)
   : resolve(dirname(fileURLToPath(import.meta.url)), '../dist-browser');
 const sourceDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '../src');
+// Only these fixed, user-activated project links may leave the checker. They
+// never contain package names, comparison values, results or other runtime data.
+const staticProjectLinks = new Set([
+  'https://wpcontentledger.com/',
+  'https://wpcontentledger.com/#overview',
+  'https://wpcontentledger.com/#how-it-works',
+  'https://wpcontentledger.com/#faq',
+  'https://certificates.wpcontentledger.com/',
+  'https://certificates.wpcontentledger.com/methodology',
+  'https://verify.wpcontentledger.com/',
+  'https://brianwinum.com/',
+  'https://brianwinum.com/wp-contentledger/',
+  'https://brianwinum.com/contact/?topic=contentledger',
+]);
 let html;
 let files;
 let scripts;
@@ -63,7 +77,7 @@ function assertPrivateHtml(document) {
     assert.doesNotMatch(match[0], /\b(?:src|href|srcset|ping|action|formaction|srcdoc)\s*=\s*[^"'\s][^\s>]*/i, 'URL-bearing attributes must be explicitly quoted for audit.');
     for (const key of ['srcset', 'ping', 'action', 'formaction', 'srcdoc']) assert.equal(attrs[key], undefined, `Unexpected ${key} data/request surface`);
     if (kind === 'a') {
-      assert.match(attrs.href ?? '', /^#[A-Za-z][A-Za-z0-9_-]*$/, 'Static navigation must stay within this page.');
+      assert.ok(/^#[A-Za-z][A-Za-z0-9_-]*$/.test(attrs.href ?? '') || staticProjectLinks.has(attrs.href), 'Static navigation must use a local section or an exact reviewed project link.');
       assert.equal(attrs.target, undefined, 'No automatic cross-window navigation.');
     } else {
       for (const key of ['src', 'href']) if (attrs[key]) localAsset(attrs[key], join(output, 'index.html'));
@@ -240,6 +254,28 @@ test('privacy audit tripwires reject representative storage, logging, navigation
   ]) assert.throws(() => assertPrivateHtml(markup), undefined, markup);
   assert.doesNotThrow(() => assertPrivateSource('worker.postMessage(request); workerScope.postMessage(result); URL.revokeObjectURL(url);', 'local worker'));
   assert.doesNotThrow(() => assertPrivateHtml('<a href="#main">Local section</a><form id="comparisons">'));
+});
+
+test('static project navigation permits only exact reviewed anchors and never remote resources', () => {
+  for (const href of staticProjectLinks) {
+    assert.doesNotThrow(() => assertPrivateHtml(`<a href="${href}">Project resource</a>`));
+    const mutated = href.includes('?') ? `${href}&package=private` : href.includes('#') ? href.replace('#', '?package=private#') : `${href}?package=private`;
+    assert.throws(() => assertPrivateHtml(`<a href="${mutated}">Unreviewed query</a>`));
+    assert.throws(() => assertPrivateHtml(`<a href="${href}" target="_blank">New window</a>`));
+    assert.throws(() => assertPrivateHtml(`<a href="${href}" ping="https://wpcontentledger.com/">Tracking</a>`));
+    assert.throws(() => assertPrivateHtml(`<img src="${href}">`));
+    assert.throws(() => assertPrivateHtml(`<link rel="preconnect" href="${href}">`));
+  }
+  for (const href of [
+    'https://example.test/',
+    'https://wpcontentledger.com/unreviewed',
+    'https://wpcontentledger.com/#unreviewed',
+    'https://wpcontentledger.com.evil.test/',
+    'https://wpcontentledger.com@evil.test/',
+    'http://wpcontentledger.com/',
+    '//wpcontentledger.com/',
+    'https://brianwinum.com/contact/?topic=other',
+  ]) assert.throws(() => assertPrivateHtml(`<a href="${href}">Unreviewed destination</a>`));
 });
 
 test('browser distribution retains third-party Ed25519 vector attribution and license terms', () => {

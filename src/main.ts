@@ -3,6 +3,8 @@ import type { PackageInput } from './platform';
 import { BROWSER_APP_VERSION, BROWSER_VERIFIER_VERSION } from './browser-version';
 import { cancellationView, formatFileSize, layerName, layerView, outcomeView, parseCheckResult, parseSelectedPackage, safeText, validateExpectations, type CheckResult, type Expectations, type SelectedPackage } from './model';
 import './style.css';
+import './site-shell.css';
+import './site-integration.css';
 
 function element<T extends HTMLElement>(id: string): T {
   const value = document.getElementById(id);
