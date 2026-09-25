@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {evaluateHealth,check} from './watchdog.mjs';
+import {evaluateHealth,check} from './managed-staging-watchdog.mjs';
 const now=1790350000000,body={status:'operational',operational:true,mode:'invited-managed-sites',verifierCheck:'configured-only',checkedAt:new Date(now).toISOString()},headers={'Content-Type':'application/json','Cache-Control':'no-store'};
 test('watchdog fails closed on stale, configured-only old API, HTTP failure, cacheable or malformed data',()=>{
   assert.equal(evaluateHealth(new Response('{}',{headers}),body,{now}).ok,true);

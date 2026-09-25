@@ -25,4 +25,4 @@ jobs:
       - name: Check aggregate repository operation
         env:
           WPCL_WATCHDOG_TEST_ALERT: ${{ github.event_name == 'workflow_dispatch' && inputs.staging_test_alert && 'true' || 'false' }}
-        run: node tools/managed-staging-monitoring/watchdog.mjs
+        run: node scripts/managed-staging-watchdog.mjs
