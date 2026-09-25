@@ -17,7 +17,11 @@ async function assertNoSeriousAxeViolations(page: Page): Promise<void> {
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
-  expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, nodes: nodes.length }))).toEqual([]);
+  expect(results.violations.map(({ id, impact, nodes }) => ({
+    id,
+    impact,
+    nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })),
+  }))).toEqual([]);
 }
 
 async function expectVisibleKeyboardFocus(locator: Locator): Promise<void> {

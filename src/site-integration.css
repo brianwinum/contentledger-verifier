@@ -27,13 +27,13 @@ body { font-family: var(--sans); font-size: 16px; line-height: 1.7; background: 
 button, input { font-family: inherit; }
 .app-shell { width: 100%; max-width: none; margin: 0; padding: 0; }
 .app-shell > #main,
-.app-shell .preview-banner {
+.app-shell .local-build-banner {
   width: min(1200px, calc(100% - 80px));
   max-width: 1200px;
   margin-inline: auto;
 }
 .app-shell > #main { min-width: 0; padding-bottom: 68px; }
-.app-shell .preview-banner {
+.app-shell .local-build-banner {
   margin-top: 24px;
   margin-bottom: 0;
   padding: 15px 20px;
@@ -175,7 +175,7 @@ button, input { font-family: inherit; }
 
 @media (max-width: 1100px) {
   .app-shell > #main,
-  .app-shell .preview-banner { width: calc(100% - 64px); }
+  .app-shell .local-build-banner { width: calc(100% - 64px); }
   #main .workspace { gap: 40px; }
   #main .check-panel { padding: 26px; }
 }
@@ -195,9 +195,9 @@ button, input { font-family: inherit; }
 
 @media (max-width: 520px) {
   .app-shell > #main,
-  .app-shell .preview-banner { width: calc(100% - 40px); }
+  .app-shell .local-build-banner { width: calc(100% - 40px); }
   .app-shell > #main { padding-bottom: 46px; }
-  .app-shell .preview-banner { margin-top: 20px; padding: 14px 16px; font-size: .8125rem; }
+  .app-shell .local-build-banner { margin-top: 20px; padding: 14px 16px; font-size: .8125rem; }
   #main .intro { padding: 34px 0 28px; }
   #main .intro .offline-pill { margin-bottom: 20px; }
   #main .intro h1 { font-size: 2.875rem; line-height: 1.06; margin-bottom: 21px; }

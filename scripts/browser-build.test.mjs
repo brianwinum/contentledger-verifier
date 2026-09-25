@@ -143,9 +143,12 @@ test('production output embeds the current bounded source and deployment identit
   assert.ok(html.includes('About this checker build'));
   assert.ok(html.includes('not your evidence package'));
   assert.ok(main.includes('checkerBuild'));
-  assert.ok(main.includes('not a signed release or independent proof of the running code'));
-  if (info.releaseStatus === 'development-unpublished') assert.equal(info.sourceRevision, null);
-  else assert.match(info.sourceRevision, /^[a-f0-9]{40}$/);
+  assert.ok(main.includes('not a publisher signature or independent proof of the running code'));
+  if (info.releaseStatus === 'local-unpublished') assert.equal(info.sourceRevision, null);
+  else {
+    assert.equal(info.releaseStatus, 'production');
+    assert.match(info.sourceRevision, /^[a-f0-9]{40}$/);
+  }
 });
 
 test('production HTML uses existing relative local assets and no inline runtime code', () => {

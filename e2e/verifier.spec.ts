@@ -32,6 +32,21 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Check an evidence package.' })).toBeVisible();
 });
 
+test('presents production and local-source builds without prerelease copy', async ({ page }) => {
+  const status = (await page.locator('#browser-build-status').textContent()) ?? '';
+  const localNotice = page.locator('#local-build-banner');
+  await expect(localNotice).toHaveCount(1);
+  if (status.includes('Production release')) {
+    await expect(localNotice).toBeHidden();
+    await expect(page.locator('body')).not.toContainText(/development preview/i);
+  } else {
+    await expect(page.locator('#browser-build-status')).toContainText('Local source build');
+    await expect(localNotice).toBeVisible();
+    await expect(localNotice).toContainText('not the deployed production release');
+  }
+  await expect(page.locator('#app-version')).toContainText('1.0.0');
+});
+
 test('checks a supported package twice without network egress and downloads a redacted report', async ({ page, browserName }) => {
   test.skip(browserName === 'webkit', 'Playwright WebKit lacks the required Ed25519 WebCrypto capability; a separate test asserts fail-closed behavior.');
   await page.waitForLoadState('networkidle');

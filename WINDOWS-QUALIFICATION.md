@@ -1,4 +1,42 @@
-# Windows browser qualification record — 0.9.0-dev
+# Windows browser qualification records
+
+## Production candidate 1.0.0 — September 25, 2026
+
+The revision-bound production candidate was exercised on Windows with Node.js
+24.17.0, npm 11.13.0, Vite 8.3.0, TypeScript 7.0.2, Playwright 1.63.0,
+and `@axe-core/playwright` 4.13.0. Its reviewed build-source SHA-256 was
+`dde0b44ded61abd9049c6173c5034ea610156b4cacadfd58e5268683bc5636b6`.
+The deployment workflow replaces the qualification placeholder with the exact
+40-character public source revision and refuses any other production status.
+
+The clean locked-dependency run produced these results:
+
+| Suite | Observed result | Status |
+| --- | --- | --- |
+| Unit and conformance | 312 tests passed | Passed |
+| Public repository boundary | 5 tests passed | Passed |
+| Provenance and artifact contract | 22 tests passed | Passed |
+| Static production-output audit | 14 tests passed | Passed |
+| Production browser suite | 53 applicable tests passed; 12 intentional engine-inapplicable skips | Passed |
+| Repeated production build | Two retained builds had identical paths, byte lengths, and SHA-256 values | Passed |
+
+The browser suite ran at the single-worker concurrency used by CI against
+Playwright Chromium, Firefox, WebKit, installed Google Chrome, and installed
+Microsoft Edge. It covered valid and invalid evidence, repeated checks, report
+downloads, drag/drop, cancellation, the 128 MiB boundary, observed
+verification-time request silence, keyboard and focus paths, WCAG A/AA Axe
+scans, 200%/400%-equivalent reflow, forced colors, reduced motion, and the
+production-versus-local build presentation. A transient button color animation
+found by the branded-Chrome Axe scan was removed; the focused Chrome/Edge checks
+and the complete suite then passed.
+
+This qualification does not establish macOS Safari or VoiceOver behavior,
+Windows Narrator behavior, host-wide network silence, publisher authentication,
+or an independent security or cryptographic review. The hosted deployment is
+created only from the public default branch after the workflow repeats the
+tests and deterministic-build checks against the final source revision.
+
+## Historical development qualification — 0.9.0-dev
 
 Executed September 19, 2026 (America/New_York). This records the Windows checks
 that were actually observed for the local browser checker. It is not a release

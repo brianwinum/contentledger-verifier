@@ -13,11 +13,11 @@ import {
 
 const sha = value => createHash('sha256').update(value).digest('hex');
 const provenance = () => ({
-  schemaVersion: 1, kind: 'contentledger-browser-build', appVersion: '0.9.0-dev', verifierVersion: 'browser-0.9.0-dev',
+  schemaVersion: 1, kind: 'contentledger-browser-build', appVersion: '1.0.0', verifierVersion: 'browser-1.0.0',
   sourceSha256: 'a'.repeat(64), sourceFileCount: 44, dependencyLockSha256: 'b'.repeat(64),
-  toolchain: { node: '24.0.0', vite: '8.3.0', typescript: '7.0.2' }, releaseStatus: 'development-unpublished', sourceRevision: null,
+  toolchain: { node: '24.0.0', vite: '8.3.0', typescript: '7.0.2' }, releaseStatus: 'local-unpublished', sourceRevision: null,
 });
-const previewProvenance = () => ({ ...provenance(), releaseStatus: 'development-preview', sourceRevision: 'c'.repeat(40) });
+const productionProvenance = () => ({ ...provenance(), releaseStatus: 'production', sourceRevision: 'c'.repeat(40) });
 function temporary(context) {
   const parent = realpathSync(tmpdir()), path = mkdtempSync(join(parent, 'contentledger-browser-release-test-'));
   context.after(() => {
@@ -95,7 +95,7 @@ test('manifest serialization is deterministic and omits host paths, clocks, iden
   const assets = minimum(), first = createReleaseManifest(provenance(), assets, assets), second = createReleaseManifest(provenance(), structuredClone(assets), structuredClone(assets));
   assert.equal(stableJson(first), stableJson(second));
   assert.equal(first.repeatedBuildsIdentical, true);
-  assert.equal(first.status, 'development-unpublished');
+  assert.equal(first.status, 'local-unpublished');
   assert.equal(first.provenance.sourceRevision, null);
   assert.equal(first.assetSetSha256, sha(stableJson(assets)));
   assert.match(first.limitations.join(' '), /Unsigned local integrity record/);
@@ -105,10 +105,10 @@ test('manifest serialization is deterministic and omits host paths, clocks, iden
   assert.equal(first.assets[0].bytes, 1, 'Manifest owns an inventory snapshot.');
 });
 
-test('revision-bound development previews retain their exact deployment identity', () => {
-  const value = createReleaseManifest(previewProvenance(), minimum(), minimum());
-  assert.equal(value.status, 'development-preview');
-  assert.equal(value.provenance.releaseStatus, 'development-preview');
+test('revision-bound production releases retain their exact deployment identity', () => {
+  const value = createReleaseManifest(productionProvenance(), minimum(), minimum());
+  assert.equal(value.status, 'production');
+  assert.equal(value.provenance.releaseStatus, 'production');
   assert.equal(value.provenance.sourceRevision, 'c'.repeat(40));
   assert.deepEqual(validateReleaseManifest(value), value);
 });
@@ -117,15 +117,15 @@ test('manifest refuses unbounded, extra, forged-release or malformed provenance 
   for (const change of [
     value => { value.sourceFileCount = 0; }, value => { value.sourceFileCount = 1001; }, value => { value.sourceSha256 += '\n'; },
     value => { value.sourceRevision = 'invented'; }, value => { value.releaseStatus = 'published'; }, value => { value.absolutePath = 'private'; },
-    value => { value.releaseStatus = 'development-preview'; },
-    value => { value.releaseStatus = 'development-preview'; value.sourceRevision = 'C'.repeat(40); },
+    value => { value.releaseStatus = 'production'; },
+    value => { value.releaseStatus = 'production'; value.sourceRevision = 'C'.repeat(40); },
     value => { value.appVersion += '\n'; value.verifierVersion += '\n'; }, value => { value.toolchain.node = '24.0.0\n'; },
     value => { value.toolchain.node = 'v24.0.0'; }, value => { value.toolchain.vite = 'file:/private'; }, value => { value.toolchain.extra = '1.0.0'; },
   ]) { const value = provenance(); change(value); assert.throws(() => createReleaseManifest(value, minimum(), minimum())); }
   for (const change of [
     value => { value.repeatedBuildsIdentical = false; }, value => { value.checks.productionBuilds = 1; },
     value => { value.status = 'published'; }, value => { value.assetRoot = '../app'; }, value => { value.assetSetSha256 = 'f'.repeat(64); },
-    value => { value.status = 'development-preview'; },
+    value => { value.status = 'production'; },
     value => { value.limitations = []; }, value => { value.extra = true; },
   ]) { const value = createReleaseManifest(provenance(), minimum(), minimum()); change(value); assert.throws(() => validateReleaseManifest(value)); }
 });
