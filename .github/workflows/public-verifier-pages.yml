@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type: deploy development preview'
+        description: 'Type: deploy production'
         required: true
         type: string
 
-run-name: Public verifier ${{ github.event_name == 'workflow_dispatch' && 'development preview deployment' || 'validation' }}
+run-name: Public verifier ${{ github.event_name == 'workflow_dispatch' && 'production deployment' || 'validation' }}
 
 permissions:
   contents: read
@@ -49,7 +49,7 @@ jobs:
       - name: Run the complete browser verifier test suite
         run: npm test
 
-      - name: Authorize an explicit default-branch preview deployment
+      - name: Authorize an explicit default-branch production deployment
         if: github.event_name == 'workflow_dispatch'
         shell: bash
         env:
@@ -58,7 +58,7 @@ jobs:
           REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
         run: |
           set -euo pipefail
-          test "$CONFIRMATION" = 'deploy development preview'
+          test "$CONFIRMATION" = 'deploy production'
           test "$REPOSITORY_VISIBILITY" = 'public'
           test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"
           test "$GITHUB_SHA" = "$GITHUB_WORKFLOW_SHA"
@@ -67,7 +67,7 @@ jobs:
       - name: Prepare a repeated-build Pages candidate
         if: github.event_name == 'workflow_dispatch'
         env:
-          CONTENTLEDGER_BROWSER_RELEASE_STATUS: development-preview
+          CONTENTLEDGER_BROWSER_RELEASE_STATUS: production
           CONTENTLEDGER_BROWSER_SOURCE_REVISION: ${{ github.sha }}
         run: npm run release:check
 
@@ -86,7 +86,7 @@ jobs:
           artifact="${candidates[0]}"
           npm run release:verify -- "$artifact"
           jq -e --arg revision "$GITHUB_SHA" \
-            '.status == "development-preview" and .provenance.releaseStatus == "development-preview" and .provenance.sourceRevision == $revision' \
+            '.status == "production" and .provenance.releaseStatus == "production" and .provenance.sourceRevision == $revision' \
             "$artifact/browser-release-manifest.json" >/dev/null
           printf 'app_path=%s/app\n' "$artifact" >> "$GITHUB_OUTPUT"
 
@@ -128,6 +128,9 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run browser end-to-end checks
+        env:
+          CONTENTLEDGER_BROWSER_RELEASE_STATUS: production
+          CONTENTLEDGER_BROWSER_SOURCE_REVISION: ${{ github.sha }}
         run: npm run test:e2e
 
       - name: Retain the browser report
@@ -140,7 +143,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    name: Deploy development preview
+    name: Deploy production verifier
     if: github.event_name == 'workflow_dispatch'
     needs:
       - build

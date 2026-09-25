@@ -152,7 +152,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   font-size: .875rem;
   font-weight: 600;
   line-height: 1.4;
-  transition: background .15s, color .15s;
 }
 .button:hover { text-decoration: none; }
 .button-primary { background: var(--accent); color: var(--paper); }

@@ -64,7 +64,7 @@ try {
   else if (args.length === 2 && args[0] === 'verify') {
     const manifest = verifyBrowserArtifact(resolve(args[1]));
     console.log(`Local artifact integrity matches: ${manifest.assetSetSha256}`);
-    console.log('Unsigned manifest; publisher authenticity and release qualification are not established.');
+    console.log('Unsigned manifest; publisher authenticity and independent security review are not established.');
   } else throw new Error('Usage: node scripts/browser-release.mjs [verify <artifact-directory>]');
 } catch (error) {
   console.error(error instanceof Error ? error.message : 'Local browser artifact preparation failed.');

@@ -302,10 +302,10 @@ if (available) {
 element('browser-build-details').hidden = false;
 const build = platform.buildInfo;
 setText('browser-build-status', build
-  ? build.releaseStatus === 'development-preview'
-    ? 'Public development preview · source revision and snapshot recorded.'
-    : 'Unpublished development build · source snapshot recorded.'
-  : 'Live development or unidentified build · no production-build fingerprint is available.');
+  ? build.releaseStatus === 'production'
+    ? 'Production release · source revision and build snapshot recorded.'
+    : 'Local source build · build snapshot recorded.'
+  : 'Unidentified build · no production-build fingerprint is available.');
 const buildRows: [string, unknown][] = build ? [
   ...(build.sourceRevision ? [['Source revision', build.sourceRevision] as [string, unknown]] : []),
   ['Source snapshot SHA-256', build.sourceSha256],
@@ -319,20 +319,22 @@ for (const [label, value] of buildRows) {
   const detail = document.createElement('dd'); detail.textContent = safeText(value);
   element('browser-build-information').append(term, detail);
 }
-element('preview-banner').hidden = false;
-setText('preview-banner', 'Browser verifier development build — supported offline checks are implemented. Cross-browser release qualification and independent security review remain open.');
+if (!build || build.releaseStatus !== 'production') {
+  element('local-build-banner').hidden = false;
+  setText('local-build-banner', 'Local source build — not the deployed production release.');
+}
 setText('connection-label', 'Runs locally in your browser');
-setText('intro-eyebrow', 'LOCAL BROWSER CHECKER · DEVELOPMENT');
+setText('intro-eyebrow', 'LOCAL BROWSER CHECKER');
 setText('intro-copy', 'Choose a public ContentLedger evidence package to check its carried evidence and declared scope. Your file stays on this device. Read the result limitations before relying on it.');
-setText('supported-packages', 'Native Evidence Bundle v3 · Maximum 128 MiB · Local development build.');
+setText('supported-packages', 'ContentLedger Evidence Bundle v3 · Maximum 128 MiB.');
 setText('privacy-copy', 'Package processing happens in browser memory. Nothing is uploaded or saved by this app unless you request a report download.');
 setText('explainer-copy', 'Check package integrity, carried signatures and identity history, checkpoint proofs, declared scope, and any trusted values you supply. Timestamp proofs receive structural checks and archive references receive metadata checks only.');
 setText('run-checks-label', 'Run the local offline checks');
 setText('run-checks-copy', 'After the app loads, processing stays on this device. No account is needed.');
 setText('read-result-copy', 'Read each check and its limitations. An offline pass does not prove authorship, content truth, current website state, or trusted time.');
 setText('app-version', `· Browser ${BROWSER_APP_VERSION}`);
-setText('footer-note', 'Local browser processing. Development build.');
+setText('footer-note', 'Local browser processing. No account needed.');
 setText('busy-copy', 'Checking signatures, identity history, and checkpoint proofs. Larger packages may take a moment.');
-setText('evidence-limitations-copy', 'This is a local development build, not a qualified public release. Checks cover the supplied package and its declared scope, not evidence the sender omitted. An absent signature provides no signing assurance. Timestamp structure and retained archive metadata do not establish trusted time, Bitcoin consensus, or current archive availability. Supplied UUID and manifest-hash comparisons are independent membership checks, not proof of a relationship between them.');
+setText('evidence-limitations-copy', 'Checks cover the supplied package and its declared scope, not evidence the sender omitted. An absent signature provides no signing assurance. Timestamp structure and retained archive metadata do not establish trusted time, Bitcoin consensus, or current archive availability. Supplied UUID and manifest-hash comparisons are independent membership checks, not proof of a relationship between them.');
 saveButton.textContent = 'Download report';
 syncControls();

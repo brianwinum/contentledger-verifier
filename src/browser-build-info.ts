@@ -10,7 +10,7 @@ export interface BrowserBuildInfo {
   readonly sourceFileCount: number;
   readonly dependencyLockSha256: string;
   readonly toolchain: Readonly<{ node: string; vite: string; typescript: string }>;
-  readonly releaseStatus: 'development-unpublished' | 'development-preview';
+  readonly releaseStatus: 'local-unpublished' | 'production';
   readonly sourceRevision: string | null;
 }
 
@@ -27,9 +27,9 @@ function exactObject(value: unknown, keys: string[]): value is Record<string, un
 export function parseBrowserBuildInfo(value: unknown): BrowserBuildInfo | null {
   if (!exactObject(value, fields) || value.schemaVersion !== 1 || value.kind !== 'contentledger-browser-build'
     || value.appVersion !== BROWSER_APP_VERSION || value.verifierVersion !== BROWSER_VERIFIER_VERSION
-    || value.releaseStatus !== 'development-unpublished' && value.releaseStatus !== 'development-preview'
-    || value.releaseStatus === 'development-unpublished' && value.sourceRevision !== null
-    || value.releaseStatus === 'development-preview' && (typeof value.sourceRevision !== 'string' || !/^[a-f0-9]{40}$/.test(value.sourceRevision))
+    || value.releaseStatus !== 'local-unpublished' && value.releaseStatus !== 'production'
+    || value.releaseStatus === 'local-unpublished' && value.sourceRevision !== null
+    || value.releaseStatus === 'production' && (typeof value.sourceRevision !== 'string' || !/^[a-f0-9]{40}$/.test(value.sourceRevision))
     || typeof value.sourceSha256 !== 'string' || value.sourceSha256.length !== 64 || !/^[a-f0-9]{64}$/.test(value.sourceSha256)
     || typeof value.dependencyLockSha256 !== 'string' || value.dependencyLockSha256.length !== 64 || !/^[a-f0-9]{64}$/.test(value.dependencyLockSha256)
     || !Number.isSafeInteger(value.sourceFileCount) || (value.sourceFileCount as number) < 1 || (value.sourceFileCount as number) > 1000

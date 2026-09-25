@@ -1,5 +1,5 @@
 # Security policy
 
-No production release is currently supported. Version `0.9.0-dev` is a development build. A revision-bound GitHub Pages deployment is a public development preview only and must not be represented as independently audited or release-qualified.
+Security fixes are supported for the current production release of the hosted verifier at [verify.wpcontentledger.com](https://verify.wpcontentledger.com/). Older source revisions and local builds are not maintained as separate supported releases. Production status records the tested, revision-bound deployment; it does not claim an independent security audit or cryptographic publisher signature.
 
-Please do not include private evidence, keys, credentials, recovery material, or exploit details in a public issue. Until a public repository and private vulnerability-reporting channel are established, report security findings directly to the project maintainer through the existing private project channel.
+Do not include private evidence, keys, credentials, recovery material, personal data, or exploit details in a public issue. Report a vulnerability privately to the project maintainer through an established private contact channel. Include the verifier version, browser and operating system, affected source revision when known, reproduction steps, and the security impact. Use synthetic evidence packages whenever possible.

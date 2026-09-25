@@ -16,7 +16,7 @@ function metadata() {
     sourceFileCount: 123,
     dependencyLockSha256: 'b'.repeat(64),
     toolchain: { node: '24.13.0', vite: '8.0.3', typescript: '7.0.2' },
-    releaseStatus: 'development-unpublished',
+    releaseStatus: 'local-unpublished',
     sourceRevision: null,
   };
 }
@@ -38,10 +38,10 @@ test('build metadata is unavailable outside a compiled production browser build'
   assert.equal(browserReport(result()).checkerBuild, null);
 });
 
-test('build metadata accepts only the exact bounded current-development schema', () => {
+test('build metadata accepts only the exact bounded current production schema', () => {
   assert.deepEqual(parseBrowserBuildInfo(metadata()), metadata());
-  const preview = { ...metadata(), releaseStatus: 'development-preview', sourceRevision: 'c'.repeat(40) };
-  assert.deepEqual(parseBrowserBuildInfo(preview), preview);
+  const production = { ...metadata(), releaseStatus: 'production', sourceRevision: 'c'.repeat(40) };
+  assert.deepEqual(parseBrowserBuildInfo(production), production);
   for (const value of [undefined, null, false, 1, 'build', [], [metadata()], new Date()]) {
     assert.equal(parseBrowserBuildInfo(value), null);
   }
@@ -56,12 +56,12 @@ test('build metadata accepts only the exact bounded current-development schema',
   for (const [key, value] of [
     ['schemaVersion', '1'], ['schemaVersion', 2], ['kind', 'signed-release'],
     ['appVersion', '0.1.3'], ['verifierVersion', '3.0.0'],
-    ['releaseStatus', 'released'], ['releaseStatus', 'development-preview'], ['sourceRevision', 'a'.repeat(40)],
+    ['releaseStatus', 'released'], ['releaseStatus', 'production'], ['sourceRevision', 'a'.repeat(40)],
   ] as const) {
     assert.equal(parseBrowserBuildInfo({ ...metadata(), [key]: value }), null, key);
   }
   for (const sourceRevision of ['', 'a'.repeat(39), 'a'.repeat(41), 'A'.repeat(40), `${'a'.repeat(40)}\n`, '../private']) {
-    assert.equal(parseBrowserBuildInfo({ ...metadata(), releaseStatus: 'development-preview', sourceRevision }), null, sourceRevision);
+    assert.equal(parseBrowserBuildInfo({ ...metadata(), releaseStatus: 'production', sourceRevision }), null, sourceRevision);
   }
   assert.equal(parseBrowserBuildInfo(Object.create(metadata())), null, 'inherited fields are not metadata');
 });
@@ -119,11 +119,11 @@ test('saved report build identity requires matching checker and verifier version
   const build = metadata();
   assert.deepEqual(browserReport(r, build).checkerBuild, build);
   for (const changed of [
-    { ...r, appVersion: '0.8.0-dev' },
-    { ...r, verifierVersion: 'browser-0.8.0-dev' },
+    { ...r, appVersion: '0.8.0' },
+    { ...r, verifierVersion: 'browser-0.8.0' },
     { ...r, appVersion: '0.1.3', verifierVersion: '3.0.0' },
   ]) assert.equal(browserReport(changed, build).checkerBuild, null);
-  for (const value of [null, undefined, { ...build, appVersion: '0.8.0-dev' }, { ...build, sourceSha256: 'invalid' }, { ...build, fileName: r.fileName }]) {
+  for (const value of [null, undefined, { ...build, appVersion: '0.8.0' }, { ...build, sourceSha256: 'invalid' }, { ...build, fileName: r.fileName }]) {
     assert.equal(browserReport(r, value).checkerBuild, null);
   }
 });
@@ -139,7 +139,7 @@ test('build identity cannot change a result, its package digest or its download 
   assert.notEqual(report.packageSha256, report.checkerBuild?.sourceSha256);
   assert.notEqual(report.packageSha256, report.checkerBuild?.dependencyLockSha256);
   assert.equal(reportFileName(r), 'contentledger-check-summary-cccccccccccc-20260919T161920Z.json');
-  assert.match(report.checkerBuildNotice, /not a signed release/);
+  assert.match(report.checkerBuildNotice, /not a publisher signature/);
   assert.match(report.checkerBuildNotice, /Null means no matching production-build identity/);
 });
 

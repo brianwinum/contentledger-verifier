@@ -135,7 +135,7 @@ export async function verifyBrowserPackage(
       result.outcome = 'passed_with_limitations';
       result.code = 'browser_profile_checks_complete';
       result.message = 'The required offline checks passed for this supported package. Read the individual results: absent signatures confer no signing assurance, timestamps are structural only, and archive references are retained metadata. This does not establish content truth, human identity, current state, or trusted time.';
-      add('capability', 'valid', result.code, 'All required checks for this supported browser profile completed. This local development build has not completed cross-browser release qualification or independent security review.');
+      add('capability', 'valid', result.code, 'All required checks for this supported browser profile completed. Read the result limitations before relying on the package.');
     }
   } catch (error) {
     if (error instanceof VerifierError) {

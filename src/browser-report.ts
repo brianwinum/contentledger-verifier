@@ -34,14 +34,14 @@ export function browserReport(result: CheckResult, buildInfo: unknown = BROWSER_
     appVersion: result.appVersion,
     verifierVersion: result.verifierVersion,
     checkerBuild: build?.appVersion === result.appVersion && build.verifierVersion === result.verifierVersion ? build : null,
-    checkerBuildNotice: 'Build-source identity only, not a signed release or independent proof of the running code. Null means no matching production-build identity is available.',
+    checkerBuildNotice: 'Build-source identity only, not a publisher signature or independent proof of the running code. Null means no matching production-build identity is available.',
     packageSha256: result.packageSha256,
     outcome: result.outcome,
     code: result.code,
     message: result.message,
     expectationsSupplied: Object.fromEntries(['bundleSha256', 'checkpointSha256', 'manifestSha256', 'did', 'recordUuid'].map(key => [key, Boolean(result.expectations[key as keyof typeof result.expectations])])),
     expectationSemantics: 'Independent membership comparisons; matching a record UUID and a manifest hash does not establish a relationship between them.',
-    limitations: ['Browser development build; cross-browser release qualification and independent security review remain open.', 'Checks only the supplied offline package.', 'Does not establish authorship, ownership, live website state, exclusive key custody, trusted time or completeness outside the package.', 'Original website content digests are retained claims; original content is not independently retrieved or recomputed.', 'Archive references are retained metadata; OpenTimestamps checks do not verify Bitcoin consensus.'],
+    limitations: ['Checks only the supplied offline package.', 'Does not establish authorship, ownership, live website state, exclusive key custody, trusted time or completeness outside the package.', 'Original website content digests are retained claims; original content is not independently retrieved or recomputed.', 'Archive references are retained metadata; OpenTimestamps checks do not verify Bitcoin consensus.', 'Build-source identity is not a publisher signature or an independent security audit.'],
     checks: result.layers.map(({ layer, status, code }) => ({ layer, status, code })),
   };
 }

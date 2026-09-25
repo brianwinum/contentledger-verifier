@@ -47,7 +47,7 @@ test('provenance is deterministic, sorted, exact-byte and contains only bounded 
   assert.equal(result.sourceSha256, hash(JSON.stringify({ schemaVersion: 1, files: inventory }) + '\n'));
   assert.equal(result.sourceFileCount, inventory.length);
   assert.equal(result.dependencyLockSha256, hash(readFileSync(join(root, 'package-lock.json'))));
-  assert.equal(result.releaseStatus, 'development-unpublished'); assert.equal(result.sourceRevision, null);
+  assert.equal(result.releaseStatus, 'local-unpublished'); assert.equal(result.sourceRevision, null);
   assert.equal(result.verifierVersion, `browser-${result.appVersion}`);
   assert.deepEqual(Object.keys(result.toolchain), ['node', 'vite', 'typescript']);
   assert.equal(result.toolchain.node, process.versions.node);
@@ -89,29 +89,29 @@ test('environment files, ambient build overrides and production environment depe
   assert.doesNotThrow(() => assertBrowserBuildEnvironment(root, {}));
   assert.doesNotThrow(() => assertBrowserBuildEnvironment(root, { NODE_ENV: 'production', UNRELATED_OPERATOR_LABEL: 'ignored' }));
   assert.doesNotThrow(() => assertBrowserBuildEnvironment(root, { CONTENTLEDGER_BROWSER_AUDIT_OUTPUT: 'audit-only' }));
-  assert.deepEqual(browserDeploymentIdentity({}), { releaseStatus: 'development-unpublished', sourceRevision: null });
-  const preview = { CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'development-preview', CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'a'.repeat(40) };
-  assert.deepEqual(browserDeploymentIdentity(preview), { releaseStatus: 'development-preview', sourceRevision: 'a'.repeat(40) });
-  assert.doesNotThrow(() => assertBrowserBuildEnvironment(root, preview));
+  assert.deepEqual(browserDeploymentIdentity({}), { releaseStatus: 'local-unpublished', sourceRevision: null });
+  const production = { CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'production', CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'a'.repeat(40) };
+  assert.deepEqual(browserDeploymentIdentity(production), { releaseStatus: 'production', sourceRevision: 'a'.repeat(40) });
+  assert.doesNotThrow(() => assertBrowserBuildEnvironment(root, production));
   for (const environment of [
-    { CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'development-preview' },
+    { CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'production' },
     { CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'a'.repeat(40) },
-    { ...preview, CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'A'.repeat(40) },
-    { ...preview, CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'a'.repeat(39) },
-    { ...preview, CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'released' },
-    { ...preview, CONTENTLEDGER_BROWSER_PRIVATE_VALUE: 'never-print-this' },
+    { ...production, CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'A'.repeat(40) },
+    { ...production, CONTENTLEDGER_BROWSER_SOURCE_REVISION: 'a'.repeat(39) },
+    { ...production, CONTENTLEDGER_BROWSER_RELEASE_STATUS: 'released' },
+    { ...production, CONTENTLEDGER_BROWSER_PRIVATE_VALUE: 'never-print-this' },
   ]) assert.throws(() => assertBrowserBuildEnvironment(root, environment), /deployment|unreviewed/);
   for (const text of ['export const x = import.meta.env.VITE_VALUE;', "export const x = process['env'];", 'export const x = process.env.VALUE;']) {
     write(root, 'src/browser-worker.ts', text); assert.throws(() => collectBrowserProvenance(root), /environment dependency/);
   }
 });
-test('browser version declarations must be exact, unique, development-only and mutually consistent', t => {
+test('browser version declarations must be exact, unique, stable-release and mutually consistent', t => {
   const root = temporaryApp(t);
   for (const text of [
-    "export const BROWSER_APP_VERSION = '0.9.0-dev'; export const BROWSER_VERIFIER_VERSION = 'browser-0.8.0-dev';",
-    "export const BROWSER_APP_VERSION = '0.9.0'; export const BROWSER_VERIFIER_VERSION = 'browser-0.9.0';",
-    "export const BROWSER_APP_VERSION = '00.9.0-dev'; export const BROWSER_VERIFIER_VERSION = 'browser-00.9.0-dev';",
-    "export const BROWSER_APP_VERSION = '0.9.0-dev'; export const BROWSER_VERIFIER_VERSION = 'browser-0.9.0-dev'; export const EXTRA = true;",
+    "export const BROWSER_APP_VERSION = '1.0.0'; export const BROWSER_VERIFIER_VERSION = 'browser-0.9.0';",
+    "export const BROWSER_APP_VERSION = '1.0.0-dev'; export const BROWSER_VERIFIER_VERSION = 'browser-1.0.0-dev';",
+    "export const BROWSER_APP_VERSION = '01.0.0'; export const BROWSER_VERIFIER_VERSION = 'browser-01.0.0';",
+    "export const BROWSER_APP_VERSION = '1.0.0'; export const BROWSER_VERIFIER_VERSION = 'browser-1.0.0'; export const EXTRA = true;",
   ]) { write(root, 'src/browser-version.ts', text); assert.throws(() => collectBrowserProvenance(root), /version constants/); }
 });
 test('dependency root, pins, lock versions and installed tool package versions must agree', t => {

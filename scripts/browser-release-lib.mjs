@@ -12,7 +12,7 @@ export const RELEASE_LIMITATIONS = [
   'Unsigned local integrity record; not publisher authentication or a signed attestation.',
   'Two matching builds on one recorded toolchain do not prove cross-platform reproducibility.',
   'Source and lockfile fingerprints do not authenticate installed dependency bytes or the toolchain.',
-  'Development artifact; browser qualification and independent security review remain open.',
+  'Release qualification does not constitute an independent security review.',
   'Static audits do not replace network observation, offline distribution testing or security review.',
 ];
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -132,10 +132,10 @@ export function compareBrowserAssets(first, second) {
 function validateProvenance(value) {
   if (!exact(value, ['schemaVersion', 'kind', 'appVersion', 'verifierVersion', 'sourceSha256', 'sourceFileCount', 'dependencyLockSha256', 'toolchain', 'releaseStatus', 'sourceRevision'])
     || value.schemaVersion !== 1 || value.kind !== 'contentledger-browser-build'
-    || value.releaseStatus !== 'development-unpublished' && value.releaseStatus !== 'development-preview'
-    || value.releaseStatus === 'development-unpublished' && value.sourceRevision !== null
-    || value.releaseStatus === 'development-preview' && (typeof value.sourceRevision !== 'string' || !/^[a-f0-9]{40}$/.test(value.sourceRevision))
-    || typeof value.appVersion !== 'string' || /^\d+\.\d+\.\d+-dev$/.exec(value.appVersion)?.[0] !== value.appVersion
+    || value.releaseStatus !== 'local-unpublished' && value.releaseStatus !== 'production'
+    || value.releaseStatus === 'local-unpublished' && value.sourceRevision !== null
+    || value.releaseStatus === 'production' && (typeof value.sourceRevision !== 'string' || !/^[a-f0-9]{40}$/.test(value.sourceRevision))
+    || typeof value.appVersion !== 'string' || /^\d+\.\d+\.\d+$/.exec(value.appVersion)?.[0] !== value.appVersion
     || value.verifierVersion !== `browser-${value.appVersion}` || !hash(value.sourceSha256) || !hash(value.dependencyLockSha256)
     || !integer(value.sourceFileCount, 1000) || value.sourceFileCount < 1 || !exact(value.toolchain, ['node', 'vite', 'typescript'])
     || Object.values(value.toolchain).some(version => typeof version !== 'string' || version.length > 80 || /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.exec(version)?.[0] !== version)) fail('Invalid browser build provenance.');
@@ -164,7 +164,7 @@ export function createReleaseManifest(provenance, first, second) {
 export function validateReleaseManifest(manifest) {
   if (!exact(manifest, ['schemaVersion', 'kind', 'status', 'assetRoot', 'provenance', 'assets', 'assetSetSha256', 'repeatedBuildsIdentical', 'checks', 'limitations'])
     || manifest.schemaVersion !== 1 || manifest.kind !== 'contentledger-browser-local-artifact'
-    || manifest.status !== 'development-unpublished' && manifest.status !== 'development-preview' || manifest.assetRoot !== 'app'
+    || manifest.status !== 'local-unpublished' && manifest.status !== 'production' || manifest.assetRoot !== 'app'
     || manifest.repeatedBuildsIdentical !== true || !exact(manifest.checks, ['productionBuilds', 'matchingSourceSnapshots', 'productionStaticAudits'])
     || manifest.checks.productionBuilds !== 2 || manifest.checks.matchingSourceSnapshots !== 3 || manifest.checks.productionStaticAudits !== 2
     || JSON.stringify(manifest.limitations) !== JSON.stringify(RELEASE_LIMITATIONS)) fail('Invalid unsigned browser artifact manifest.');

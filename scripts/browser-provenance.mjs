@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Development source identity, not a signature, Git claim, dependency-byte
+// Build-source identity, not a signature, Git claim, dependency-byte
 // attestation, or proof that a remotely served application has these bytes.
 import { createHash } from 'node:crypto';
 import { closeSync, fstatSync, lstatSync, openSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
@@ -100,8 +100,8 @@ export function assertBrowserBuildEnvironment(appRoot, environment = process.env
 export function browserDeploymentIdentity(environment = process.env) {
   const status = environment.CONTENTLEDGER_BROWSER_RELEASE_STATUS;
   const revision = environment.CONTENTLEDGER_BROWSER_SOURCE_REVISION;
-  if (status === undefined && revision === undefined) return { releaseStatus: 'development-unpublished', sourceRevision: null };
-  if (status !== 'development-preview' || typeof revision !== 'string' || !/^[a-f0-9]{40}$/.test(revision)) {
+  if (status === undefined && revision === undefined) return { releaseStatus: 'local-unpublished', sourceRevision: null };
+  if (status !== 'production' || typeof revision !== 'string' || !/^[a-f0-9]{40}$/.test(revision)) {
     fail('deployment status and source revision must be an exact reviewed pair.');
   }
   return { releaseStatus: status, sourceRevision: revision };
@@ -154,7 +154,7 @@ export function collectBrowserProvenance(appRoot) {
   const config = json(contents.get('tsconfig.json'));
   if (config.extends !== undefined || config.references !== undefined) fail('external TypeScript config inputs require review.');
   const versionText = contents.get('src/browser-version.ts').toString('utf8').replace(/\/\/[^\r\n]*/g, '').trim();
-  const versions = /^export const BROWSER_APP_VERSION = '((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)-dev)';\s*export const BROWSER_VERIFIER_VERSION = '(browser-[^']+)';$/.exec(versionText);
+  const versions = /^export const BROWSER_APP_VERSION = '((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))';\s*export const BROWSER_VERIFIER_VERSION = '(browser-[^']+)';$/.exec(versionText);
   if (!versions || versions[2] !== `browser-${versions[1]}`) fail('browser version constants are malformed or inconsistent.');
   const deployment = browserDeploymentIdentity(process.env);
   return { schemaVersion: 1, kind: 'contentledger-browser-build', appVersion: versions[1], verifierVersion: versions[2],

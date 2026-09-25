@@ -1,6 +1,6 @@
 {
   "name": "contentledger-public-verifier",
-  "version": "0.9.0-dev",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "license": "GPL-2.0-or-later",

@@ -39,7 +39,7 @@ test('browser reports preserve the native redacted contract and limitation cavea
   assert.match(report.notice, /not a signed attestation/);
   assert.match(report.expectationSemantics, /does not establish a relationship/);
   assert.match(report.limitations.join(' '), /Bitcoin consensus/);
-  assert.match(report.limitations.join(' '), /Browser development build; cross-browser release qualification and independent security review remain open/);
+  assert.match(report.limitations.join(' '), /Build-source identity is not a publisher signature or an independent security audit/);
 });
 
 test('browser download snapshots its filename and JSON from the same result', () => {
