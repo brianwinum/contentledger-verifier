@@ -1,0 +1,28 @@
+name: Managed staging watchdog
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      staging_test_alert:
+        description: 'Send an intentional STAGING TEST workflow-failure notification'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: managed-staging-watchdog
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0, same pin as verifier CI
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Check aggregate repository operation
+        env:
+          WPCL_WATCHDOG_TEST_ALERT: ${{ github.event_name == 'workflow_dispatch' && inputs.staging_test_alert && 'true' || 'false' }}
+        run: node tools/managed-staging-monitoring/watchdog.mjs
