@@ -1,20 +1,30 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-const URL='https://wpcl-managed-staging.bw-a81.workers.dev/health';
+const TARGETS=Object.freeze([
+  Object.freeze({name:'staging',url:'https://wpcl-managed-staging.bw-a81.workers.dev/health'}),
+  Object.freeze({name:'production',url:'https://certificates.wpcontentledger.com/health'})
+]);
 export function evaluateHealth(response,value,{now=Date.now()}={}){
-  const valid=response.status===200&&/application\/json/i.test(response.headers.get('content-type')||'')
+  const valid=response.status===200&&/^application\/json(?:\s*;|$)/i.test(response.headers.get('content-type')||'')
     && /(?:^|,)\s*no-store\s*(?:,|$)/i.test(response.headers.get('cache-control')||'')
     && value?.operational===true&&value.status==='operational'&&value.mode==='invited-managed-sites'
+    && value.ingestionEnabled===true&&value.indexingPolicy==='reviewed-certificates'
     && value.verifierCheck==='configured-only'&&Number.isFinite(Date.parse(value.checkedAt))&&Math.abs(now-Date.parse(value.checkedAt))<=120000;
   return {ok:Boolean(valid),status:valid?'operational':'watchdog_failed',nativeVerifier:'not-tested'};
 }
-export async function check({fetchImpl=fetch,now=Date.now}={}){
+async function checkEndpoint(url,{fetchImpl,now}){
   let response;try{
-    response=await fetchImpl(URL,{redirect:'error',cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(15000)});
+    response=await fetchImpl(url,{method:'GET',redirect:'error',cache:'no-store',credentials:'omit',headers:{Accept:'application/json'},signal:AbortSignal.timeout(15000)});
     const reader=response.body?.getReader();if(!reader)throw Error('body');let bytes=0,text='';const decoder=new TextDecoder('utf-8',{fatal:true});
     try{while(true){const chunk=await reader.read();if(chunk.done)break;bytes+=chunk.value.length;if(bytes>4096){await reader.cancel();throw Error('size');}text+=decoder.decode(chunk.value,{stream:true});}text+=decoder.decode();}finally{reader.releaseLock();}
     return evaluateHealth(response,JSON.parse(text),{now:now()});
   }catch{return {ok:false,status:'watchdog_failed',nativeVerifier:'not-tested'};}
+}
+export async function check({fetchImpl=fetch,now=Date.now}={}){
+  // Each endpoint has its own timeout/result; one failure never skips the other.
+  const checks=await Promise.all(TARGETS.map(async target=>({target:target.name,...await checkEndpoint(target.url,{fetchImpl,now})})));
+  const ok=checks.every(report=>report.ok);
+  return {ok,status:ok?'operational':'watchdog_failed',nativeVerifier:'not-tested',checks};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   // Manual workflow failure qualification is separate from the normal check.

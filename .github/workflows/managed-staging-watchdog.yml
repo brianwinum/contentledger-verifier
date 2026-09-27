@@ -1,4 +1,4 @@
-name: Managed staging watchdog
+name: Managed repository watchdog
 on:
   schedule:
     - cron: '11,41 * * * *'
@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Check aggregate repository operation
+      - name: Check staging and production repository operation
         env:
           WPCL_WATCHDOG_TEST_ALERT: ${{ github.event_name == 'workflow_dispatch' && inputs.staging_test_alert && 'true' || 'false' }}
         run: node scripts/managed-staging-watchdog.mjs
