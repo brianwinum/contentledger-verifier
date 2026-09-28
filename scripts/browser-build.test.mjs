@@ -22,6 +22,7 @@ const staticProjectLinks = new Set([
   'https://certificates.wpcontentledger.com/',
   'https://certificates.wpcontentledger.com/methodology',
   'https://verify.wpcontentledger.com/',
+  'https://buy.wpcontentledger.com/',
   'https://brianwinum.com/',
   'https://brianwinum.com/wp-contentledger/',
   'https://brianwinum.com/contact/?topic=contentledger',
