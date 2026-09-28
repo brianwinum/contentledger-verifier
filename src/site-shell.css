@@ -163,11 +163,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 .site-header > .button-primary {
   display: inline-flex;
   flex: 0 0 auto;
-  gap: 14px;
+  gap: 22px;
   width: 180px;
   height: 63px;
   min-height: 63px;
-  padding: 13px 17px;
+  padding: 18px 22px;
   font-size: .875rem;
 }
 .text-link {
