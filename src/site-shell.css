@@ -130,6 +130,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   line-height: 1.4;
 }
 .site-header nav span { margin-left: 0; }
+.site-header nav .mobile-sales-link { display: none; }
 .site-header nav a:hover, .text-link:hover, .footer-links a:hover {
   color: var(--accent);
   text-decoration: underline;
@@ -152,6 +153,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   font-size: .875rem;
   font-weight: 600;
   line-height: 1.4;
+  transition: background .15s, color .15s;
 }
 .button:hover { text-decoration: none; }
 .button-primary { background: var(--accent); color: var(--paper); }
@@ -237,6 +239,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   .site-header { gap: 20px; }
   .site-header nav { gap: 0 20px; }
   .site-header .header-cta { display: none; }
+  .site-header nav .mobile-sales-link { display: inline-flex; color: var(--accent); font-weight: 700; }
   .hero-copy { padding-top: 16px; }
   .hero h1 { font-size: 3.5rem; }
   .hero-actions { gap: 12px 24px; }
