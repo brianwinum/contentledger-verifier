@@ -105,7 +105,7 @@ button, input { font-family: inherit; }
 #main .field-help { margin: 8px 0 0; font-size: .8125rem; line-height: 1.7; }
 #main .comparison-note { margin-top: 18px; padding-left: 14px; }
 #main .check-actions { flex-wrap: wrap; gap: 12px; margin-top: 25px; }
-#main .button { min-height: 52px; padding: 16px 20px; border-radius: 0; font-size: .875rem; font-weight: 600; line-height: 1.5; }
+#main .button { min-height: 52px; padding: 16px 20px; border-radius: 0; font-size: .875rem; font-weight: 600; line-height: 1.5; transition: none; }
 #main .button > span:first-child { font-size: inherit; font-weight: inherit; }
 #main .button-primary { flex: 1 1 180px; justify-content: space-between; }
 #main .button-primary > span:last-child { font-size: 1.2rem; line-height: 1; }
