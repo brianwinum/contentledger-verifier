@@ -74,7 +74,7 @@ test('keyboard order, disclosure operation, validation focus, and completion foc
   const header = page.getByRole('banner');
   await expect(header.getByRole('link', { name: 'WP ContentLedger home', exact: true })).toHaveAttribute('href', 'https://wpcontentledger.com/');
   const main = page.locator('#main');
-  const introSales = main.getByRole('link', { name: 'Explore WP ContentLedger for WordPress' });
+  const introSales = main.getByRole('link', { name: 'View plugin pricing' });
   await expect(main).toHaveAttribute('tabindex', '-1');
   const skip = page.getByRole('link', { name: 'Skip to content', exact: true });
   await expect(skip).toHaveAttribute('href', '#main');
