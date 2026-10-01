@@ -26,6 +26,17 @@ test('one transport failure never prevents checking the other target and has no 
   }
 });
 
+test('separate production and staging checks never let the other environment decide the alert',async()=>{
+  for(const target of ['production','staging']){
+    const called=[];
+    const result=await check({target,now:()=>now,fetchImpl:async url=>{called.push(url);return url===urls[target==='production'?0:1]?new Response('{}',{status:503,headers}):healthy();}});
+    assert.deepEqual(called,[urls[target==='production'?1:0]]);
+    assert.equal(result.ok,true);
+    assert.deepEqual(result.checks.map(row=>row.target),[target]);
+  }
+  await assert.rejects(check({target:'other',fetchImpl:()=>{throw Error('should_not_fetch');}}),/invalid_watchdog_target/);
+});
+
 test('both requests start independently while a first endpoint is still pending',async()=>{
   let release;const calls=[],pending=new Promise(done=>{release=done;});
   const run=check({now:()=>now,fetchImpl:async url=>{calls.push(url);if(url===urls[0])await pending;return healthy();}});
@@ -48,5 +59,7 @@ test('intentional manual STAGING TEST remains the same separate failure path',()
   const run=spawnSync(process.execPath,[fileURLToPath(new URL('./managed-staging-watchdog.mjs',import.meta.url))],{env:{WPCL_WATCHDOG_TEST_ALERT:'true'},encoding:'utf8',timeout:5000,maxBuffer:4096});
   assert.equal(run.status,1);assert.equal(run.stdout,'');assert.equal(run.stderr.trim(),'[STAGING TEST] Intentional watchdog failure to verify GitHub notification delivery.');
   const workflow=readFileSync(new URL('../.github/workflows/managed-staging-watchdog.yml',import.meta.url),'utf8');
-  assert.match(workflow,/cron: '11,41 \* \* \* \*'/);assert.match(workflow,/staging_test_alert:/);assert.match(workflow,/WPCL_WATCHDOG_TEST_ALERT:.*inputs\.staging_test_alert/);assert.match(workflow,/persist-credentials: false/);
+  assert.match(workflow,/name: Managed staging watchdog/);assert.match(workflow,/cron: '11,41 \* \* \* \*'/);assert.match(workflow,/staging_test_alert:/);assert.match(workflow,/WPCL_WATCHDOG_TARGET: staging/);assert.match(workflow,/WPCL_WATCHDOG_TEST_ALERT:.*inputs\.staging_test_alert/);assert.match(workflow,/persist-credentials: false/);
+  const production=readFileSync(new URL('../.github/workflows/managed-production-watchdog.yml',import.meta.url),'utf8');
+  assert.match(production,/name: Managed production watchdog/);assert.match(production,/cron: '17,47 \* \* \* \*'/);assert.match(production,/WPCL_WATCHDOG_TARGET: production/);assert.match(production,/persist-credentials: false/);assert.doesNotMatch(production,/staging_test_alert|WPCL_WATCHDOG_TEST_ALERT/);
 });

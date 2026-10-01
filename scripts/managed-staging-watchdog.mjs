@@ -20,14 +20,16 @@ async function checkEndpoint(url,{fetchImpl,now}){
     return evaluateHealth(response,JSON.parse(text),{now:now()});
   }catch{return {ok:false,status:'watchdog_failed',nativeVerifier:'not-tested'};}
 }
-export async function check({fetchImpl=fetch,now=Date.now}={}){
+export async function check({fetchImpl=fetch,now=Date.now,target='all'}={}){
+  if(!['all','staging','production'].includes(target))throw Error('invalid_watchdog_target');
   // Each endpoint has its own timeout/result; one failure never skips the other.
-  const checks=await Promise.all(TARGETS.map(async target=>({target:target.name,...await checkEndpoint(target.url,{fetchImpl,now})})));
+  const selected=target==='all'?TARGETS:TARGETS.filter(item=>item.name===target);
+  const checks=await Promise.all(selected.map(async item=>({target:item.name,...await checkEndpoint(item.url,{fetchImpl,now})})));
   const ok=checks.every(report=>report.ok);
   return {ok,status:ok?'operational':'watchdog_failed',nativeVerifier:'not-tested',checks};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   // Manual workflow failure qualification is separate from the normal check.
   if(process.env.WPCL_WATCHDOG_TEST_ALERT==='true'){console.error('[STAGING TEST] Intentional watchdog failure to verify GitHub notification delivery.');process.exitCode=1;}
-  else check().then(report=>{console.log(JSON.stringify(report));if(!report.ok)process.exitCode=1;});
+  else check({target:process.env.WPCL_WATCHDOG_TARGET||'all'}).then(report=>{console.log(JSON.stringify(report));if(!report.ok)process.exitCode=1;}).catch(()=>{console.error('Invalid watchdog target.');process.exitCode=1;});
 }
