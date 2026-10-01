@@ -46,6 +46,7 @@ test('the repository contains only the reviewed public browser-verifier boundary
   const files = inventory();
   assert.ok(files.length > 50);
   assert.deepEqual(files.filter(({ top }) => top === '.github').map(({ path }) => path).sort(), [
+    '.github/workflows/managed-production-watchdog.yml',
     '.github/workflows/managed-staging-watchdog.yml',
     '.github/workflows/public-verifier-pages.yml',
   ]);
