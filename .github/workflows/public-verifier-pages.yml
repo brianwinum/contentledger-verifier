@@ -49,6 +49,9 @@ jobs:
       - name: Run the complete browser verifier test suite
         run: npm test
 
+      - name: Test staging and production watchdog health contracts
+        run: node --test scripts/managed-staging-watchdog.test.mjs
+
       - name: Authorize an explicit default-branch production deployment
         if: github.event_name == 'workflow_dispatch'
         shell: bash
