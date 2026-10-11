@@ -8,6 +8,16 @@ Version `1.0.0` is the production browser verifier for ContentLedger Evidence Bu
 
 The release qualification covers the automated and manual checks documented in this repository. It is not an independent security audit or a publisher signature, and it does not change the verification limits below.
 
+## Managed certificate preview
+
+WP ContentLedger's separate managed repository is available within a ten-site
+production-preview ceiling. Read the [preview details](docs/managed-service/public-preview.md)
+and [owner setup guide](docs/managed-service/owner-guide.md) for installation,
+emailed connection codes, site-control checks, quotas, public-data handling
+and support. These guides describe the hosted service, not additional browser
+checker capabilities. Certificate indexing requires individual review and
+current source permission.
+
 ## Local development
 
 Requirements: Node.js 24 or newer and npm.
@@ -51,7 +61,10 @@ When refreshing shared presentation, preserve checker IDs, native controls, evid
 
 ## Repository boundary
 
-This project contains only browser verifier source, public specifications and schemas, and synthetic public evidence packages used for conformance tests. It intentionally excludes:
+This project contains browser verifier source, public specifications and schemas,
+synthetic conformance packages, and two public managed-service owner guides.
+The guides are documentation only and are not bundled into the checker or an
+automatic production deployment. It intentionally excludes:
 
 - WordPress/PHP plugin source and database code
 - desktop/Tauri adapters and native binaries

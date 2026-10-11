@@ -11,7 +11,7 @@ const ignoredRoots = new Set(['node_modules', 'dist-browser', 'build-output', 'p
 const allowedRoots = new Set([
   '.github', '.gitattributes', '.gitignore', 'CONTRIBUTING.md', 'LICENSE', 'README.md', 'SECURITY.md', 'THIRD-PARTY-NOTICES.md',
   'WINDOWS-QUALIFICATION.md',
-  'e2e', 'index.html', 'package-lock.json', 'package.json', 'playwright.config.ts', 'schemas', 'scripts', 'specifications', 'src', 'tests',
+  'docs', 'e2e', 'index.html', 'package-lock.json', 'package.json', 'playwright.config.ts', 'schemas', 'scripts', 'specifications', 'src', 'tests',
   'tsconfig.json', 'vite.config.ts', ...ignoredRoots,
 ]);
 
@@ -45,6 +45,10 @@ function inventory() {
 test('the repository contains only the reviewed public browser-verifier boundary', () => {
   const files = inventory();
   assert.ok(files.length > 50);
+  assert.deepEqual(files.filter(({ top }) => top === 'docs').map(({ path }) => path).sort(), [
+    'docs/managed-service/owner-guide.md',
+    'docs/managed-service/public-preview.md',
+  ]);
   assert.deepEqual(files.filter(({ top }) => top === '.github').map(({ path }) => path).sort(), [
     '.github/workflows/managed-production-watchdog.yml',
     '.github/workflows/managed-staging-watchdog.yml',
