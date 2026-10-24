@@ -1,10 +1,10 @@
 # Owner guide
 
-This guide covers the bounded managed certificate service with WP ContentLedger v0.13.24. Normal connection happens inside WordPress; a developer, DNS edit, or server-side key file is not normally required. Hosting must support the plugin's PHP requirements, native Sodium, HTTPS, and public site-control checks. Read the [preview details](public-preview.md) for availability, limits and public-data handling.
+This guide covers the bounded managed certificate service with WP ContentLedger v0.13.26. Normal connection happens inside WordPress; a developer, DNS edit, or server-side key file is not normally required. Hosting must support the plugin's PHP requirements, native Sodium, HTTPS, and public site-control checks. Read the [preview details](public-preview.md) for availability, limits and public-data handling.
 
 ## Set up
 
-1. Back up the site's files and database. Obtain the signed v0.13.24 package through the existing [plugin distribution channel](https://buy.wpcontentledger.com/), or contact support for installation access. Install using the supported plugin installation/update path. The private source repository is not a public download link. Keep the exact ZIP and release attestations if verifying the package independently.
+1. Back up the site's files and database. Obtain the signed v0.13.26 package through the existing [plugin distribution channel](https://buy.wpcontentledger.com/), or contact support for installation access. Install using the supported plugin installation/update path. The private source repository is not a public download link. Keep the exact ZIP and release attestations if verifying the package independently.
 2. Open **ContentLedger → Website Identity**. Prepare an Identity Recovery Pack with a strong password, save it safely, test that exact file, then commit the identity change using the saved-and-tested confirmation. Keep both the file and password private, in separate protected locations. An Active identity is required; Prepared is not committed.
 3. Check that the intended signing and automatic recording options are enabled for **Posts** and **Pages**. Identity setup, recording settings, and repository connection are separate steps.
 4. In **ContentLedger → Certificates**, review the editable email prefilled from WordPress's administrator email, consent to requesting a code, and request it. No manual email approval is required while bounded enrollment is available. Enter the emailed code, select the intended content types, review the connection consent, and connect. The service verifies control of the exact public HTTPS root origin and binds its Website Identity. Connection codes expire; never post them in support threads. A full service or exhausted delivery budget can deny admission.
@@ -42,7 +42,7 @@ The current new-site preview allowance is **10 works, 50 certificate revisions p
 
 | Symptom | Action |
 | --- | --- |
-| `wal_website_identity_producer_sodium_unavailable` | Ask the host to enable native PHP Sodium for the PHP version serving WordPress, then retry identity preparation. A conflicting `pdo_mysql` warning does not prove Sodium failed; do not disable the site's required MySQL driver to solve it. |
+| `wal_website_identity_producer_sodium_unavailable` or `wal_website_identity_runtime_sodium_unavailable` | Ask the host to enable native PHP Sodium for the PHP version serving WordPress, then retry the interrupted operation. For an existing identity, preserve it and retry verification; do not create a replacement. Recheck the extension after a hosting PHP change. A conflicting `pdo_mysql` warning does not prove Sodium failed; do not disable the site's required MySQL driver to solve it. |
 | Recovery Pack test passed, identity still Prepared | Confirm the exact pack was saved and tested, then commit the retained identity change. Do not create a replacement identity merely to finish this step. |
 | No connection code | Confirm the email and exact public HTTPS root origin, then request a code once. A generic accepted request does not prove admission or inbox delivery. Check spam, expiry, the one-hour resend cooldown, service capacity and delivery budgets with the operator. Ambiguous sends are not automatically resent. |
 | Certificate remains Pending | Read the recorded failure/status and last-check age. Verify public HTTPS accessibility, native evidence eligibility, recording settings, and allowances. Let bounded retries run; repeated clicking can consume attempts. |
@@ -50,3 +50,5 @@ The current new-site preview allowance is **10 works, 50 certificate revisions p
 | Site moved, cloned, or restored | Pause expansion and contact the operator before reconnecting. The origin and authority are bound; another invitation is not a takeover or recovery shortcut. |
 
 For preview support contact **bw@brianwinum.com**. Include the plugin/PHP versions, exact public origin, sanitized error, time and time zone, and affected certificate URL if appropriate. Never send passwords, connection codes, private keys, or Recovery Packs. Report suspected security issues privately to the same address, separately from routine support; use synthetic evidence and do not post exploit details in a public issue.
+
+Operational action-required notices identify the affected website and condition. A **Condition cleared** notice applies only to that condition on that website; it is not a claim that every service check passed. Current operator alerts do not automatically enroll each site owner for email notifications.

@@ -9,7 +9,7 @@ or routine developer setup is required.
 
 ## Connect your site
 
-Use the current signed **v0.13.24** release and follow the
+Use the current signed **v0.13.26** release and follow the
 [owner setup guide](owner-guide.md). You need a single WordPress installation
 at its public HTTPS root origin, WordPress 6.2 or newer, PHP 8.2 or newer with
 native Sodium, and an
