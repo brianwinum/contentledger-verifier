@@ -81,3 +81,6 @@ A passing result means the carried package satisfied this verifier's supported o
 ## License
 
 GPL-2.0-or-later. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+## Local compatibility candidate: manifest 2.1
+
+The current unpublished reader also accepts the opt-in coverage profile in manifest 2.1: selected field declarations, WooCommerce parent/variation data, and original-media SHA-256 declarations. Historical 1.0/2.0 evidence remains supported. It validates the bounded signed declarations; it does not download source media or independently verify Bitcoin against a node. This source change is not a claim that the hosted checker has been updated.
