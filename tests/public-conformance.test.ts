@@ -22,7 +22,7 @@ const manifest = JSON.parse(readFileSync(new URL('./corpus-manifest.json', impor
 test('the checked-in public corpus has a fixed shape', () => {
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.kind, 'contentledger-public-conformance-corpus');
-  assert.equal(manifest.fixtures.length, 13);
+  assert.equal(manifest.fixtures.length, 14);
   assert.equal(new Set(manifest.fixtures.map(item => item.file)).size, manifest.fixtures.length);
   assert.ok(manifest.fixtures.some(item => item.outcome === 'passed_with_limitations'));
   assert.ok(manifest.fixtures.some(item => item.outcome === 'failed'));

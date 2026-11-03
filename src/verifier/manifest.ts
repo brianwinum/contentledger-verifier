@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Compatibility port of the frozen portable verifier's Manifest_Verifier.php.
 import { sha256 } from './bytes';
-import { decodeCanonicalObject, exactKeys } from './canonical';
+import { decodeCanonicalObject, encodeCanonical, exactKeys } from './canonical';
 import { VerifierError } from './errors';
 
 export const MAX_MANIFEST_BYTES = 1048576;
@@ -191,7 +191,84 @@ function validateCommon(document: Record<string, unknown>, digestsRequired: bool
   for (const limitation of limitations) {
     if (typeof limitation !== 'string' || limitation === '' || byteLength(limitation) > 4096) throw new VerifierError('manifest_limitations', 'A manifest limitation is invalid.');
   }
-  validateSubject(object(document.subject, 'manifest_subject'));
+  const subject = { ...object(document.subject, 'manifest_subject') };
+  if (document.manifestVersion === '2.1') {
+    validateCoverage(subject.coverage);
+    delete subject.coverage;
+    const content = digests.filter(value => (value as Record<string, unknown>).scope === 'canonical-content');
+    if (content.length !== 1 || (content[0] as Record<string, unknown>).canonicalization !== 'wp-contentledger-content-v2') throw new VerifierError('coverage_digest', 'Extended evidence requires its declared content profile.');
+  }
+  validateSubject(subject);
+}
+
+
+// Manifest 2.1: bounded declarations only; this does not fetch source files or Bitcoin.
+function coverageValue(value: unknown, depth = 0): void {
+  if (depth > 2) throw new VerifierError('coverage_value', 'Nested field limit exceeded.');
+  if (Array.isArray(value) && value.length <= 100) { for (const item of value) coverageValue(item, depth + 1); return; }
+  if (value === null || typeof value === 'boolean' || typeof value === 'number' && Number.isSafeInteger(value)
+    || typeof value === 'string' && byteLength(value) <= 8192) return;
+  throw new VerifierError('coverage_value', 'Unsupported selected field value.');
+}
+
+function coverageProduct(value: unknown, parent: boolean): void {
+  const p = object(value, 'coverage_product');
+  exactOptional(p, ['sku', 'regularPrice', 'salePrice', 'stockStatus', 'attributes', ...(parent ? ['currency', 'variations'] : ['id', 'parentId'])], ['stockQuantity'], 'coverage_product');
+  const invalid = (): never => { throw new VerifierError('coverage_product', 'Invalid product or variation declaration.'); };
+  for (const key of ['sku', 'regularPrice', 'salePrice', 'stockStatus']) if (typeof p[key] !== 'string' || byteLength(p[key]) > 8192) invalid();
+  for (const key of ['regularPrice', 'salePrice']) if (p[key] !== '' && !fullMatch(/^[0-9]+(?:\.[0-9]+)?$/, p[key] as string)) invalid();
+  if (p.stockQuantity != null && (typeof p.stockQuantity !== 'string' || !fullMatch(/^-?[0-9]+(?:\.[0-9]+)?$/, p.stockQuantity))) invalid();
+  if (!Array.isArray(p.attributes) || p.attributes.length > 100) return invalid();
+  let lastName = '';
+  for (const a of p.attributes) {
+    if (!isObject(a) || !exactKeys(a, ['name', 'values']) || typeof a.name !== 'string' || utf8Compare(lastName, a.name) >= 0
+      || !Array.isArray(a.values) || a.values.length > 100) return invalid();
+    for (const v of a.values) if (typeof v !== 'string' || byteLength(v) > 8192) invalid();
+    lastName = a.name;
+  }
+  if (parent) {
+    if (typeof p.currency !== 'string' || !fullMatch(/^[A-Z]{3}$/, p.currency) || !Array.isArray(p.variations) || p.variations.length > 100) return invalid();
+    let last = 0n, parentId: unknown;
+    for (const variation of p.variations) {
+      coverageProduct(variation, false);
+      const v = variation as Record<string, unknown>;
+      // PHP's signed-64-bit cast saturates. Preserve rejection of duplicate saturated IDs.
+      const rawId = BigInt(v.id as string), id = rawId > 9223372036854775807n ? 9223372036854775807n : rawId;
+      if (id <= last || parentId !== undefined && parentId !== v.parentId) invalid();
+      last = id; parentId = v.parentId;
+    }
+  } else if (typeof p.id !== 'string' || typeof p.parentId !== 'string' || !fullMatch(/^[1-9][0-9]*$/, p.id) || !fullMatch(/^[1-9][0-9]*$/, p.parentId)) invalid();
+}
+
+// PHP strcmp uses UTF-8 byte order, distinct from canonical JSON's UTF-16 key order.
+function utf8Compare(a: string, b: string): number {
+  const left = new TextEncoder().encode(a), right = new TextEncoder().encode(b);
+  for (let i = 0; i < Math.min(left.length, right.length); i++) if (left[i] !== right[i]) return left[i] - right[i];
+  return left.length - right.length;
+}
+
+function validateCoverage(value: unknown): void {
+  const coverage = object(value, 'coverage_shape');
+  if (byteLength(encodeCanonical(coverage)) > 131072) throw new VerifierError('coverage_shape', 'Extended coverage exceeds its bound.');
+  exactOptional(coverage, ['profile', 'fields'], ['product', 'media'], 'coverage_shape');
+  if (coverage.profile !== 'wp-contentledger-coverage-v1' || !Array.isArray(coverage.fields) || coverage.fields.length > 100) throw new VerifierError('coverage_profile', 'Unsupported coverage profile.');
+  let last = '';
+  for (const field of coverage.fields) {
+    if (!isObject(field) || !exactKeys(field, ['name', 'present', 'value']) || typeof field.name !== 'string'
+      || !fullMatch(/^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/, field.name) || last >= field.name || typeof field.present !== 'boolean'
+      || !field.present && field.value !== null) throw new VerifierError('coverage_field', 'Invalid or duplicate selected field.');
+    coverageValue(field.value); last = field.name;
+  }
+  if (coverage.media != null) {
+    const m = object(coverage.media, 'coverage_media');
+    exactOptional(m, ['algorithm', 'sha256', 'bytes', 'mimeType', 'scope'], ['alt', 'width', 'height'], 'coverage_media');
+    if (m.alt != null && (typeof m.alt !== 'string' || byteLength(m.alt) > 8192)
+      || (m.width != null) !== (m.height != null)
+      || m.width != null && (typeof m.width !== 'number' || typeof m.height !== 'number' || !Number.isInteger(m.width) || !Number.isInteger(m.height) || Math.min(m.width, m.height) < 1 || Math.max(m.width, m.height) > 100000)
+      || m.algorithm !== 'sha-256' || !isManifestHash(m.sha256) || typeof m.bytes !== 'number' || !Number.isInteger(m.bytes) || m.bytes < 0 || m.bytes > 20971520
+      || typeof m.mimeType !== 'string' || m.scope !== 'original-file-bytes') throw new VerifierError('coverage_media', 'Invalid original-file evidence.');
+  }
+  if (coverage.product != null) coverageProduct(coverage.product, true);
 }
 
 function validateV2(document: Record<string, unknown>): void {
@@ -231,7 +308,7 @@ export async function verifyManifest(bytes: Uint8Array, expectedUuid = '', expec
   const document = decodeCanonicalObject(snapshot, 64);
   const version = document.manifestVersion;
   if (version === '1.0') validateV1(document);
-  else if (version === '2.0') validateV2(document);
+  else if (version === '2.0' || version === '2.1') validateV2(document);
   else throw new VerifierError('manifest_profile', 'The manifest profile is not supported by this verifier.', 'unsupported');
   const hash = await sha256(snapshot);
   if (expectedHash !== '' && (!isManifestHash(expectedHash) || expectedHash !== hash)) throw new VerifierError('manifest_expected_hash', 'A manifest does not match its expected SHA-256 digest.');
