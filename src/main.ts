@@ -5,6 +5,34 @@ import { cancellationView, formatFileSize, layerName, layerView, outcomeView, pa
 import './style.css';
 import './site-shell.css';
 import './site-integration.css';
+import './compat-promo.css';
+
+// This flag contains no package data. It only dismisses the public announcement
+// for this tab's session; the verifier itself remains local and offline.
+const compatPromo = document.querySelector<HTMLElement>('.compat-promo');
+if (compatPromo) {
+  const close = compatPromo.querySelector<HTMLButtonElement>('.compat-promo__close');
+  const link = compatPromo.querySelector<HTMLAnchorElement>('.compat-promo__link');
+  const dismiss = () => {
+    compatPromo.hidden = true;
+    try { sessionStorage.setItem('wpcl-llms-compat-dismissed', '1'); } catch { /* Storage may be disabled. */ }
+    document.removeEventListener('pointerdown', onOutside);
+    document.removeEventListener('keydown', onKeydown);
+  };
+  const onOutside = (event: PointerEvent) => { if (!compatPromo.contains(event.target as Node)) dismiss(); };
+  const onKeydown = (event: KeyboardEvent) => { if (event.key === 'Escape') dismiss(); };
+  close?.addEventListener('click', dismiss);
+  link?.addEventListener('click', dismiss);
+  let dismissed = false;
+  try { dismissed = sessionStorage.getItem('wpcl-llms-compat-dismissed') === '1'; } catch { /* Storage may be disabled. */ }
+  if (!dismissed) window.setTimeout(() => {
+    if (!busy) {
+      compatPromo.hidden = false;
+      document.addEventListener('pointerdown', onOutside);
+      document.addEventListener('keydown', onKeydown);
+    }
+  }, 10000);
+}
 
 function element<T extends HTMLElement>(id: string): T {
   const value = document.getElementById(id);
@@ -338,3 +366,4 @@ setText('busy-copy', 'Checking signatures, identity history, and checkpoint proo
 setText('evidence-limitations-copy', 'Checks cover the supplied package and its declared scope, not evidence the sender omitted. An absent signature provides no signing assurance. Timestamp structure and retained archive metadata do not establish trusted time, Bitcoin consensus, or current archive availability. Supplied UUID and manifest-hash comparisons are independent membership checks, not proof of a relationship between them.');
 saveButton.textContent = 'Download report';
 syncControls();
+
