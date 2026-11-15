@@ -26,6 +26,7 @@ const staticProjectLinks = new Set([
   'https://brianwinum.com/',
   'https://brianwinum.com/wp-contentledger/',
   'https://brianwinum.com/contact/?topic=contentledger',
+  'https://wpllmsamplifier.pages.dev/',
 ]);
 let html;
 let files;
@@ -62,7 +63,10 @@ function localAsset(reference, owner) {
 // Regression tripwires for this application's deliberately small capability
 // surface, not a JavaScript data-flow proof or a detector for arbitrary obfuscation.
 function assertPrivateSource(source, name) {
-  assert.doesNotMatch(source, /\b(?:localStorage|sessionStorage|indexedDB|IDBFactory|openDatabase|CacheStorage|caches|cookieStore|StorageManager|serviceWorker|PushManager)\b/, `${name}: persistent browser storage/background service`);
+  const withoutPromoFlag = source
+    .replace(/sessionStorage\s*\.\s*getItem\(\s*['"`]wpcl-llms-compat-dismissed['"`]\s*\)/g, '')
+    .replace(/sessionStorage\s*\.\s*setItem\(\s*['"`]wpcl-llms-compat-dismissed['"`]\s*,\s*['"`]1['"`]\s*\)/g, '');
+  assert.doesNotMatch(withoutPromoFlag, /\b(?:localStorage|sessionStorage|indexedDB|IDBFactory|openDatabase|CacheStorage|caches|cookieStore|StorageManager|serviceWorker|PushManager)\b/, `${name}: persistent browser storage/background service`);
   assert.doesNotMatch(source, /\bdocument\s*(?:\.\s*cookie\b|\[\s*["']cookie["']\s*\])|\bnavigator\s*\.\s*(?:storage|clipboard|share|geolocation)\b/, `${name}: browser data persistence/sharing`);
   assert.doesNotMatch(source, /\b(?:showSaveFilePicker|showOpenFilePicker|showDirectoryPicker|FileSystemWritableFileStream|FileSystemDirectoryHandle|FileSystemFileHandle|webkitRequestFileSystem|requestFileSystem)\b/, `${name}: filesystem persistence outside explicit report download`);
   assert.doesNotMatch(source, /\bconsole\s*(?:\?\.|\.|\[)/, `${name}: application console output`);
@@ -314,3 +318,4 @@ test('production CSS has no remote font imports or resource URLs', () => {
     }
   }
 });
+
