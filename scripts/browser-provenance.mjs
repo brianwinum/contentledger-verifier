@@ -6,7 +6,7 @@ import { closeSync, fstatSync, lstatSync, openSync, readFileSync, readdirSync, r
 import { join, resolve } from 'node:path';
 
 export const BROWSER_SOURCE_PATHS = Object.freeze([
-  'src/site-shell.css', 'src/site-integration.css',
+  'src/site-shell.css', 'src/site-integration.css', 'src/compat-promo.css',
   'src/assets/libre-franklin-latin.woff2', 'src/assets/ibm-plex-mono-latin.woff2', 'src/assets/Libre-Franklin-OFL.txt', 'src/assets/IBM-Plex-Mono-OFL.txt', 'src/assets/favicon.svg',
   'index.html', 'LICENSE', 'package-lock.json', 'package.json', 'scripts/browser-provenance.mjs', 'THIRD-PARTY-NOTICES.md',
   'schemas/content-ledger-evidence-bundle-inventory-v1.schema.json', 'schemas/content-ledger-evidence-bundle-v3.schema.json',
@@ -161,3 +161,4 @@ export function collectBrowserProvenance(appRoot) {
     sourceSha256: digest(JSON.stringify({ schemaVersion: 1, files: inventory }) + '\n'), sourceFileCount: inventory.length,
     dependencyLockSha256: digest(contents.get('package-lock.json')), toolchain, ...deployment };
 }
+
