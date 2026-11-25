@@ -26,7 +26,7 @@ const staticProjectLinks = new Set([
   'https://brianwinum.com/',
   'https://brianwinum.com/wp-contentledger/',
   'https://brianwinum.com/contact/?topic=contentledger',
-  'https://wpllmsamplifier.pages.dev/',
+  'https://wpllmsamplifier.com/',
 ]);
 let html;
 let files;
