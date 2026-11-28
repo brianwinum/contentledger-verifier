@@ -183,7 +183,7 @@ function renderLayer(result: CheckResult['layers'][number]): HTMLElement {
 
 function renderResult(result: CheckResult): void {
   currentResult = result;
-  const view = outcomeView(result.outcome);
+  const view = outcomeView(result.outcome, result.layers);
   resultSection.hidden = false;
   summary.removeAttribute('aria-busy');
   summary.dataset.tone = view.tone;
