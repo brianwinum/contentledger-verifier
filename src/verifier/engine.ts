@@ -88,14 +88,34 @@ export async function verifyBrowserPackage(
     validateManifestScope(scope, graph.records, manifests, unsupportedManifests === 0);
     add('scope_declaration', 'valid', 'scope_declaration_valid', 'The scope declaration and listed checkpoint predecessor order are well formed. Supported record/URL-history manifest relationships were checked; this is not a signed checkpoint or full scope-completeness verdict.', { manifestChainChecked: scope.kind === 'url-history' && unsupportedManifests === 0 });
     const authorization = createSigningAuthorization(receipts);
-    const signatures = await verifySignatureIntegrity(zip, graph, manifests, authorization);
+    const selectedId = normalized.values.recordUuid ? `urn:uuid:${normalized.values.recordUuid}`
+      : scope.kind === 'record' ? scope.entryId : graph.records.length === 1 ? graph.records[0].entryId : undefined;
+    let selectedSigner: { issuer: string; kid: string } | undefined;
+    const signatures = await verifySignatureIntegrity(zip, graph, manifests, {
+      checkpoint: authorization.checkpoint,
+      record(signature) {
+        authorization.record(signature);
+        if (signature.payload.entryId === selectedId) selectedSigner = { issuer: signature.issuer, kid: signature.kid };
+      },
+    });
     const authorized = authorization.finish();
+    const selectedRecord = graph.records.find(record => record.entryId === selectedId);
     if (signatures.unsupportedRecordSignatures) {
       add('signature_integrity', 'not_checked', 'record_manifest_unsupported', 'Some record signatures depend on unsupported manifest profiles and cannot be verified. Other supported signatures passed their mathematical checks.', signatures);
     } else if (signatures.recordSignatures + signatures.checkpointSignatures > 0) {
       add('signature_integrity', 'valid', 'embedded_jws_signatures_valid', 'Supported record and checkpoint JWS signatures match their exact referenced data and public keys. Carried-history authorization is reported separately; no claim about a person, organization, or current website control is made.', signatures);
     } else {
       add('signature_integrity', 'not_present', 'embedded_jws_signatures_absent', 'No record or checkpoint JWS signatures are carried in this package.', signatures);
+    }
+    if (selectedRecord) {
+      const layer = result.layers[result.layers.length - 1];
+      const selectedRecordSummary = selectedSigner
+        ? ` Selected record ${selectedRecord.entryId}. Signer: ${selectedSigner.issuer}. Key ID: ${selectedSigner.kid}.`
+        : selectedRecord.signaturePath === null ? ' The selected record is unsigned.' : ' The selected record has no verified signer.';
+      layer.details = { ...signatures, selectedRecordSummary: selectedRecordSummary.trim() };
+      layer.message += selectedRecordSummary;
+      if (normalized.values.did && normalized.values.did !== selectedSigner?.issuer)
+        throw new VerifierError('expected_did', 'The selected record has no verified signature from the expected identity.');
     }
     if (signatures.unsupportedRecordSignatures) {
       add('signing_authorization', 'not_checked', 'record_manifest_unsupported', 'Unsupported manifest profiles prevent authorization checks for some record signatures.', { records: authorized.recordSignatures, unsupported: signatures.unsupportedRecordSignatures });

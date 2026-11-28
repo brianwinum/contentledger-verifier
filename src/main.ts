@@ -183,7 +183,7 @@ function renderLayer(result: CheckResult['layers'][number]): HTMLElement {
 
 function renderResult(result: CheckResult): void {
   currentResult = result;
-  const view = outcomeView(result.outcome);
+  const view = outcomeView(result.outcome, result.layers);
   resultSection.hidden = false;
   summary.removeAttribute('aria-busy');
   summary.dataset.tone = view.tone;
@@ -193,6 +193,12 @@ function renderResult(result: CheckResult): void {
   setText('result-description', result.outcome === 'could_not_check' && result.message ? `${result.message} ${view.description}` : view.description);
   element('busy-status').hidden = true;
   element('completed-result').hidden = false;
+  const signatureDetails = result.layers.find(layer => layer.layer === 'signature_integrity')?.details;
+  const selectedSummary = signatureDetails && typeof signatureDetails === 'object' && 'selectedRecordSummary' in signatureDetails
+    ? signatureDetails.selectedRecordSummary : undefined;
+  const showSigner = typeof selectedSummary === 'string' && (result.outcome === 'passed_with_limitations' || result.outcome === 'passed');
+  setText('selected-record-summary', showSigner ? selectedSummary : '');
+  element('selected-record-summary').hidden = !showSigner;
   setText('result-file', result.fileName);
   const date = new Date(result.checkedAt);
   setText('result-time', Number.isNaN(date.getTime()) ? 'Check time unavailable' : `Checked ${date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`);

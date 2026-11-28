@@ -56,10 +56,13 @@ export function parseCheckResult(value: unknown): CheckResult {
   return value as CheckResult;
 }
 
-export function outcomeView(outcome: Outcome): { title: string; description: string; tone: Tone; symbol: string } {
+export function outcomeView(outcome: Outcome, layers: readonly CheckLayer[] = []): { title: string; description: string; tone: Tone; symbol: string } {
   switch (outcome) {
     case 'passed':
     case 'passed_with_limitations':
+      if (layers.some(layer => layer.code === 'embedded_jws_signatures_absent' && layer.status === 'not_present')) {
+        return { title: 'Unsigned package — no signature present', description: 'Package integrity checks passed. No record or checkpoint signature identifies a signer.', tone: 'limited', symbol: '!' };
+      }
       return { title: 'Passed offline checks — limitations apply', description: 'The required offline checks passed for this package. Read the individual checks to see which evidence was present and what was verified.', tone: 'limited', symbol: '✓' };
     case 'failed':
       return { title: 'The package did not pass', description: 'At least one required check failed. Do not rely on this package as verified evidence. Review the details or ask the sender for the original package.', tone: 'negative', symbol: '×' };
