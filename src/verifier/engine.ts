@@ -109,9 +109,11 @@ export async function verifyBrowserPackage(
     }
     if (selectedRecord) {
       const layer = result.layers[result.layers.length - 1];
-      layer.message += selectedSigner
+      const selectedRecordSummary = selectedSigner
         ? ` Selected record ${selectedRecord.entryId}. Signer: ${selectedSigner.issuer}. Key ID: ${selectedSigner.kid}.`
         : selectedRecord.signaturePath === null ? ' The selected record is unsigned.' : ' The selected record has no verified signer.';
+      layer.details = { ...signatures, selectedRecordSummary: selectedRecordSummary.trim() };
+      layer.message += selectedRecordSummary;
       if (normalized.values.did && normalized.values.did !== selectedSigner?.issuer)
         throw new VerifierError('expected_did', 'The selected record has no verified signature from the expected identity.');
     }

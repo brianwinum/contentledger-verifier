@@ -208,3 +208,14 @@ test('rejects a package above the 128 MiB browser limit before verification', as
     await rm(oversized, { force: true });
   }
 });
+
+test('shows unsigned status and the signed record identity without opening details', async ({ page }) => {
+  await selectPackage(page, resolve(fixtures, 'unsigned-record.zip'));
+  await page.getByRole('button', { name: /Check package|Check again/ }).click();
+  await expect(page.locator('#result-title')).toHaveText('Unsigned package — no signature present');
+  await page.reload();
+  await selectPackage(page, resolve(fixtures, 'record.zip'));
+  await checkSelectedPackage(page);
+  await expect(page.locator('#selected-record-summary')).toBeVisible();
+  await expect(page.locator('#selected-record-summary')).toHaveText(/Signer: (did:webvh:[^ ]+)\. Key ID: \1#/);
+});
