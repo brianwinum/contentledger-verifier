@@ -209,13 +209,21 @@ test('rejects a package above the 128 MiB browser limit before verification', as
   }
 });
 
-test('shows unsigned status and the signed record identity without opening details', async ({ page }) => {
+test('shows unsigned status and the signed record identity without opening details', async ({ page, browserName }) => {
   await selectPackage(page, resolve(fixtures, 'unsigned-record.zip'));
   await page.getByRole('button', { name: /Check package|Check again/ }).click();
   await expect(page.locator('#result-title')).toHaveText('Unsigned package — no signature present');
   await page.reload();
   await selectPackage(page, resolve(fixtures, 'record.zip'));
-  await checkSelectedPackage(page);
+  await page.getByRole('button', { name: /Check package|Check again/ }).click();
+  const title = page.locator('#result-title');
+  await expect(title).not.toHaveText('Taking a closer look.', { timeout: 30_000 });
+  if (browserName === 'webkit' && await title.textContent() === 'This package could not be checked') {
+    await expect(page.locator('#package-information')).toContainText(/browser_ed25519_(unavailable|unqualified)/);
+    await expect(page.locator('#selected-record-summary')).toBeHidden();
+    return;
+  }
+  await expect(title).toHaveText(passedTitle);
   await expect(page.locator('#selected-record-summary')).toBeVisible();
   await expect(page.locator('#selected-record-summary')).toHaveText(/Signer: (did:webvh:[^ ]+)\. Key ID: \1#/);
 });
